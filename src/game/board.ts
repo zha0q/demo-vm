@@ -1,3 +1,7 @@
+import { activeTiles, isTileFree, remainingTiles } from './boardRules';
+import { canMatch, faceGroup, FLOWER_FACES, SEASON_FACES } from './matchRules';
+import { createStepQueue, type StepQueueState } from './stepQueue';
+
 export interface Tile {
   id: string;
   face: string;
@@ -5,6 +9,7 @@ export interface Tile {
   y: number;
   z: number;
   removed?: boolean;
+  state?: 'active' | 'queued' | 'matching' | 'removed' | 'animating';
   solutionPair?: number;
 }
 
@@ -22,6 +27,7 @@ export interface GameState {
   level: number;
   score: number;
   combo: number;
+  stepQueue: StepQueueState;
   seed: string;
   startedAt: number;
   message: string;
@@ -38,9 +44,6 @@ export interface MoveResult {
   message?: string;
   scoreDelta?: number;
 }
-
-export const FLOWER_FACES = new Set(['F1', 'F2', 'F3', 'F4']);
-export const SEASON_FACES = new Set(['S1', 'S2', 'S3', 'S4']);
 
 export const ORDINARY_FACES = [
   'B1',
@@ -79,7 +82,7 @@ export const ORDINARY_FACES = [
   'WHITE',
 ];
 
-const DEFAULT_TILE_SIZE = { width: 1, height: 1 };
+export { activeTiles, canMatch, faceGroup, FLOWER_FACES, isTileFree, remainingTiles, SEASON_FACES };
 
 export function createGame({ tiles, level = 1, seed = 'vita-mahjong-demo' }: {
   tiles: Tile[];
@@ -93,9 +96,10 @@ export function createGame({ tiles, level = 1, seed = 'vita-mahjong-demo' }: {
     level,
     score: 0,
     combo: 0,
+    stepQueue: createStepQueue(),
     seed,
     startedAt: Date.now(),
-    message: 'Match identical open tiles. Flowers and seasons match within their groups.',
+    message: '选择开放牌。相同牌面可配对，花牌和季节牌可组内配对。',
   };
 }
 
@@ -104,69 +108,15 @@ export function cloneGame(game: GameState): GameState {
     ...game,
     tiles: game.tiles.map((tile) => ({ ...tile })),
     history: game.history.map((move) => ({ ...move })),
+    stepQueue: {
+      tileIds: [...(game.stepQueue?.tileIds ?? [])],
+      matchingTileIds: [...(game.stepQueue?.matchingTileIds ?? [])],
+    },
   };
 }
 
 export function getTile(tiles: Tile[], id: string) {
   return tiles.find((tile) => tile.id === id);
-}
-
-export function activeTiles(tiles: Tile[]) {
-  return tiles.filter((tile) => !tile.removed);
-}
-
-export function faceGroup(face: string) {
-  if (FLOWER_FACES.has(face)) {
-    return 'flower';
-  }
-
-  if (SEASON_FACES.has(face)) {
-    return 'season';
-  }
-
-  return face;
-}
-
-export function canMatch(tileA: Tile | undefined, tileB: Tile | undefined) {
-  return Boolean(tileA && tileB && tileA.id !== tileB.id && faceGroup(tileA.face) === faceGroup(tileB.face));
-}
-
-export function isTileFree(tiles: Tile[], tileId: string, size = DEFAULT_TILE_SIZE) {
-  const tile = getTile(tiles, tileId);
-
-  if (!tile || tile.removed) {
-    return false;
-  }
-
-  const remaining = activeTiles(tiles);
-  const covered = remaining.some(
-    (candidate) =>
-      candidate.id !== tile.id &&
-      candidate.z > tile.z &&
-      overlaps(tile.x, tile.x + size.width, candidate.x, candidate.x + size.width) &&
-      overlaps(tile.y, tile.y + size.height, candidate.y, candidate.y + size.height),
-  );
-
-  if (covered) {
-    return false;
-  }
-
-  const leftBlocked = remaining.some(
-    (candidate) =>
-      candidate.id !== tile.id &&
-      candidate.z === tile.z &&
-      rangesTouch(candidate.x + size.width, tile.x) &&
-      overlaps(tile.y, tile.y + size.height, candidate.y, candidate.y + size.height),
-  );
-  const rightBlocked = remaining.some(
-    (candidate) =>
-      candidate.id !== tile.id &&
-      candidate.z === tile.z &&
-      rangesTouch(tile.x + size.width, candidate.x) &&
-      overlaps(tile.y, tile.y + size.height, candidate.y, candidate.y + size.height),
-  );
-
-  return !leftBlocked || !rightBlocked;
 }
 
 export function findAvailableMoves(tiles: Tile[]): AvailableMove[] {
@@ -195,8 +145,8 @@ export function removePair(game: GameState, firstId: string, secondId: string): 
     return fail(game, 'Tile not found.');
   }
 
-  if (!isTileFree(game.tiles, firstId) || !isTileFree(game.tiles, secondId)) {
-    return fail(game, 'Both tiles must be open.');
+  if (!canRemoveFromCurrentState(game.tiles, firstId) || !canRemoveFromCurrentState(game.tiles, secondId)) {
+    return fail(game, 'Both tiles must be reachable.');
   }
 
   if (!canMatch(first, second)) {
@@ -215,7 +165,7 @@ export function removePair(game: GameState, firstId: string, secondId: string): 
     scoreDelta,
     comboBefore: game.combo - 1,
   });
-  game.message = `Matched ${displayFace(first.face)} + ${displayFace(second.face)} for ${scoreDelta} points.`;
+  game.message = `消除 ${displayFace(first.face)} 与 ${displayFace(second.face)}，获得 ${scoreDelta} 分。`;
 
   return { ok: true, scoreDelta };
 }
@@ -241,6 +191,7 @@ export function undoLastMove(game: GameState): MoveResult {
   game.score = Math.max(0, game.score - move.scoreDelta);
   game.combo = move.comboBefore;
   game.selectedId = null;
+  game.stepQueue = createStepQueue();
   game.message = 'Last match restored.';
 
   return { ok: true };
@@ -268,7 +219,11 @@ export function shufflePlayableBoard(game: GameState): MoveResult {
 }
 
 export function isWon(game: GameState) {
-  return activeTiles(game.tiles).length === 0;
+  return remainingTiles(game.tiles).length === 0;
+}
+
+export function isCleared(game: GameState) {
+  return isWon(game);
 }
 
 export function hasMoves(game: GameState) {
@@ -356,17 +311,23 @@ export function shuffle<T>(items: T[], seed = 'seed') {
   return result;
 }
 
-function overlaps(startA: number, endA: number, startB: number, endB: number) {
-  return startA < endB && startB < endA;
-}
-
-function rangesTouch(a: number, b: number) {
-  return Math.abs(a - b) < 0.001;
-}
-
 function fail(game: GameState, message: string): MoveResult {
   game.message = message;
   return { ok: false, message };
+}
+
+function canRemoveFromCurrentState(tiles: Tile[], tileId: string) {
+  const tile = getTile(tiles, tileId);
+
+  if (!tile || tile.removed) {
+    return false;
+  }
+
+  if (tile.state === 'queued') {
+    return true;
+  }
+
+  return isTileFree(tiles, tileId);
 }
 
 function seededRandom(seed: string) {

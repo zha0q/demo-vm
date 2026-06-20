@@ -47,15 +47,22 @@ npm run dev
 | 当前棋盘兼容性 | `test/board.test.ts` |
 | 步骤队列 | `test/stepQueue.test.ts` |
 | 局内 IQ | `test/inGameIqCalculator.test.ts` |
-| 撤销 | `test/undoManager.test.ts` |
-| 提示 | `test/hintService.test.ts` |
-| 洗牌 | `test/shuffleService.test.ts` |
-| 可解性 | `test/solvabilityChecker.test.ts` |
+| 撤销 | `test/undoManager.test.ts`，尚未实现 |
+| 提示 | `test/hintService.test.ts`，尚未实现 |
+| 洗牌 | `test/shuffleService.test.ts`，尚未实现 |
+| 可解性 | `test/solvabilityChecker.test.ts`，尚未实现 |
 | 持久化 | `test/persistence.test.ts` |
 | 摄像机 | `test/camera.test.ts` |
 | 布局辅助函数 | `test/layout.test.ts` |
 
 部分目标文件可能还不存在；随着相关模块引入再创建它们。
+
+当前已落地的规则测试覆盖：
+
+- `matchRules`：普通牌、花牌、季节牌和自身/缺失牌。
+- `boardRules`：缺失/移除牌、上层覆盖、左右开放和双侧阻挡。
+- `stepQueue`：入队、立即匹配、满队列拒绝、满队列仍允许立即匹配。
+- `inGameIqCalculator`：开局 100、范围、空棋盘安全、进度/连击/耗时分量。
 
 ## 浏览器 QA
 
@@ -76,6 +83,14 @@ npm run dev
 - 底部控件没有挡住棋盘。
 - 文字没有溢出按钮或卡片。
 - 完成页覆盖层居中。
+
+最近一次浏览器 QA：
+
+- 开发服务器：`http://localhost:5174/`。
+- 已检查首页进入游戏页。
+- 已检查游戏页 canvas 有可见 3D 牌局。
+- 已检查更多菜单从右向左展开。
+- 已检查 375x667、390x844、430x932、768x1024 目标视口附近无文档横向/纵向滚动，画布和底部按钮在屏内。
 
 ## 完成声明
 

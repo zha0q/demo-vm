@@ -14,8 +14,14 @@
 
 | 文件 | 职责 |
 |---|---|
-| `src/App.tsx` | 当前单屏应用编排；计划拆成首页、游戏页、完成页 |
-| `src/game/board.ts` | 现有棋盘模型、匹配、可选性、移除、撤销、洗牌辅助函数 |
+| `src/App.tsx` | 当前首页、游戏页、完成页的应用编排；页面组件仍内联在此文件中 |
+| `src/game/board.ts` | 棋盘模型、移除、撤销、洗牌辅助函数，并向后兼容导出规则函数 |
+| `src/game/constants.ts` | 队列、IQ、动画、保存 key 和几何容差常量 |
+| `src/game/config.ts` | 关卡提示、撤销、洗牌次数和玩法配置 |
+| `src/game/matchRules.ts` | 普通牌、花牌、季节牌的分组与匹配规则 |
+| `src/game/boardRules.ts` | 覆盖、左右开放和可选性规则 |
+| `src/game/stepQueue.ts` | 四格托牌队列和立即匹配逻辑 |
+| `src/game/inGameIqCalculator.ts` | 本局 IQ 计算和标签 |
 | `src/game/levels.ts` | 程序化关卡目录和牌坐标生成 |
 | `src/game/persistence.ts` | 保存/读取辅助函数 |
 | `src/render/mahjongScene.ts` | Three.js 场景、牌网格、射线拾取、摄像机取景 |
@@ -49,9 +55,9 @@ MahjongScene -> onTileClick(tileId) -> React/游戏动作
 - 决定两张牌是否匹配。
 - 直接修改分数、连击、队列、关卡进度或保存状态。
 
-## 规划中的模块拆分
+## 当前模块拆分
 
-规划中的 `src/game` 模块：
+已落地的 `src/game` 模块：
 
 - `constants.ts`：带注释的全局静态常量。
 - `config.ts`：关卡和玩法调参。
@@ -59,13 +65,16 @@ MahjongScene -> onTileClick(tileId) -> React/游戏动作
 - `boardRules.ts`：覆盖、阻挡、可选逻辑。
 - `stepQueue.ts`：四格队列和立即配对。
 - `inGameIqCalculator.ts`：本局 IQ 计分。
+
+仍规划中的 `src/game` 模块：
+
 - `undoManager.ts`：快照命令栈。
 - `hintService.ts`：提示优先级。
 - `shuffleService.ts`：仅洗牌面且保持不变式。
 - `solvabilityChecker.ts`：递归规则搜索与记忆化。
 - `scoring.ts`：分数和连击辅助函数。
 
-规划中的 `src/ui` 模块：
+当前 React 页面流已在 `src/App.tsx` 内实现，后续可再按以下目标拆出 `src/ui` 模块：
 
 - `HomePage.tsx`
 - `GamePage.tsx`

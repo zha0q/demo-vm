@@ -1,11 +1,5 @@
-import { buildFaceBag, shuffle, type Tile } from './board';
-
-export interface LevelDefinition {
-  id: number;
-  name: string;
-  subtitle: string;
-  shape: 'gate' | 'turtle' | 'pavilion';
-}
+import { ORDINARY_FACES, shuffle, type Tile } from './board';
+import { getLevelConfig, LEVEL_CONFIGS, type LevelConfig } from './config';
 
 interface Coordinate {
   x: number;
@@ -13,32 +7,20 @@ interface Coordinate {
   z: number;
 }
 
-export const levelCatalog: LevelDefinition[] = [
-  {
-    id: 1,
-    name: 'Garden Gate',
-    subtitle: 'Compact opener with a few stacked locks.',
-    shape: 'gate',
-  },
-  {
-    id: 2,
-    name: 'Classic Turtle',
-    subtitle: 'Wide shoulders and a small raised roof.',
-    shape: 'turtle',
-  },
-  {
-    id: 3,
-    name: 'Moon Pavilion',
-    subtitle: 'A taller pyramid that rewards top-down clearing.',
-    shape: 'pavilion',
-  },
-];
+export const levelCatalog = LEVEL_CONFIGS.map((config) => ({
+  id: config.id,
+  name: config.name,
+  subtitle: config.subtitle,
+  difficulty: config.difficulty,
+}));
 
 export function createLevelTiles(levelId = 1, seed = 'vita-mahjong-demo'): Tile[] {
-  const level = levelCatalog.find((candidate) => candidate.id === levelId) ?? levelCatalog[0];
-  const coordinates = getShapeCoordinates(level.shape);
+  const level = getLevelConfig(levelId);
+  const coordinates = solutionOrderedCoordinates(
+    level.layoutRows.map((layoutRow) => row(layoutRow.y, layoutRow.z, layoutRow.count, layoutRow.startX ?? 0)),
+  );
   const pairCount = Math.floor(coordinates.length / 2);
-  const faces = buildFaceBag(pairCount * 2, seed, levelId);
+  const faces = buildLevelFaceBag(level, pairCount * 2, seed);
   const pairs = [];
 
   for (let index = 0; index < pairCount; index += 1) {
@@ -68,45 +50,24 @@ export function createLevelTiles(levelId = 1, seed = 'vita-mahjong-demo'): Tile[
   return tiles;
 }
 
-function getShapeCoordinates(shape: LevelDefinition['shape']) {
-  if (shape === 'gate') {
-    return solutionOrderedCoordinates([
-      row(0, 0, 5),
-      row(1, 0, 5),
-      row(2, 1, 3),
-      row(3, 1, 3),
-      row(4, 2, 1),
-      row(5, 2, 1),
-    ]);
+function buildLevelFaceBag(level: LevelConfig, count: number, seed: string) {
+  const bag: string[] = [];
+  const ordinaryPool = shuffle(ORDINARY_FACES, `${seed}:ordinary-pool:${level.id}`).slice(0, level.faceVariety);
+
+  if (level.includeSpecialFaces && count >= 8) {
+    bag.push('F1', 'F2', 'F3', 'F4', 'S1', 'S2', 'S3', 'S4');
   }
 
-  if (shape === 'pavilion') {
-    return solutionOrderedCoordinates([
-      row(0, 0, 9),
-      row(1, 0, 9),
-      row(2, 1, 7),
-      row(3, 1, 7),
-      row(4, 2, 5),
-      row(5, 2, 5),
-      row(6, 3, 3),
-      row(7, 3, 3),
-      row(8, 4, 1),
-      row(9, 4, 1),
-    ]);
+  for (let index = 0; bag.length + 1 < count; index += 1) {
+    const face = ordinaryPool[index % ordinaryPool.length] ?? ORDINARY_FACES[0];
+    bag.push(face, face);
   }
 
-  return solutionOrderedCoordinates([
-    row(0, 0, 8),
-    row(1, 0, 10, -1),
-    row(2, 0, 10, -1),
-    row(3, 0, 8),
-    row(1, 1, 8),
-    row(2, 1, 8),
-    row(1, 2, 6),
-    row(2, 2, 6),
-    row(1, 3, 4),
-    row(2, 3, 4),
-  ]);
+  if (bag.length < count) {
+    bag.push(bag[0] ?? ORDINARY_FACES[0]);
+  }
+
+  return shuffle(bag.slice(0, count), `${seed}:level-faces:${level.id}`);
 }
 
 function solutionOrderedCoordinates(rows: Coordinate[][]) {

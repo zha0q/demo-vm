@@ -1,4 +1,5 @@
 import { cloneGame, type GameState } from './board';
+import { createStepQueue } from './stepQueue';
 
 export const SAVE_KEY = 'vita-mahjong-save';
 const HISTORY_LIMIT = 5;
@@ -31,6 +32,7 @@ export function createEmptyHistory(): SavedState {
       tiles: [],
       selectedId: null,
       history: [],
+      stepQueue: createStepQueue(),
       level: 1,
       score: 0,
       combo: 0,
