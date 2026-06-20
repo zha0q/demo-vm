@@ -16,8 +16,11 @@ RUN npm ci --include=dev
 # 诊断输出（临时）
 # 列出 node_modules/.bin 并尝试打印 tsc 版本，帮助定位为何构建找不到 tsc
 # -----------------------
+RUN echo '--- node/npm versions ---' && node -v && npm -v || true
+RUN echo '--- ls node_modules (root) ---' && ls -la node_modules || true
 RUN echo '--- ls node_modules/.bin ---' && ls -la node_modules/.bin || true
-RUN echo '--- try tsc -v ---' && if [ -x node_modules/.bin/tsc ]; then node_modules/.bin/tsc -v; else echo 'tsc not executable or missing'; fi
+RUN echo '--- which tsc ---' && which tsc || true
+RUN echo '--- try local tsc -v ---' && if [ -x node_modules/.bin/tsc ]; then node_modules/.bin/tsc -v; else echo 'tsc not executable or missing'; fi
 
 # 复制源代码
 COPY . .
