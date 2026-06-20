@@ -19,6 +19,10 @@ jobs:
       - name: Install dependencies
         run: npm install
 
+      - name: Install Linux Rollup native binding
+        if: runner.os == 'Linux'
+        run: npm install @rollup/rollup-linux-x64-gnu@4.62.2 --no-save
+
       - name: Build
         run: npm run build
 
