@@ -19,7 +19,9 @@ describe('level generation', () => {
   test('generated solution order clears a level without illegal matches', () => {
     const tiles = createLevelTiles(2, 'solvable-demo');
     const game = createGame({ tiles, level: 2, seed: 'solvable-demo' });
-    const sortedPairs = [...new Set(tiles.map((tile) => tile.solutionPair))].sort((a, b) => a - b);
+    const sortedPairs = [...new Set(tiles.map((tile) => tile.solutionPair))]
+      .filter((pair): pair is number => typeof pair === 'number')
+      .sort((a, b) => a - b);
 
     for (const pairIndex of sortedPairs) {
       const pair = game.tiles.filter((tile) => tile.solutionPair === pairIndex);

@@ -1,0 +1,292 @@
+@bg: #121712;
+@panel: #18211b;
+@panel-soft: #202a22;
+@ink: #f5f0de;
+@muted: #aeb9a9;
+@line: #384334;
+@gold: #d7bd68;
+@teal: #67d8c2;
+
+:root {
+  color-scheme: dark;
+  --bg: @bg;
+  --panel: @panel;
+  --panel-soft: @panel-soft;
+  --ink: @ink;
+  --muted: @muted;
+  --line: @line;
+  --gold: @gold;
+  --teal: @teal;
+  font-family: Georgia, "Noto Serif SC", "Times New Roman", serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#app {
+  width: 100%;
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  color: @ink;
+  background: @bg;
+  overflow: hidden;
+}
+
+button {
+  min-height: 42px;
+  border: 1px solid @line;
+  border-radius: 8px;
+  padding: 0.65rem 0.8rem;
+  color: @ink;
+  background: #253228;
+  cursor: pointer;
+  font: 700 0.92rem/1 Georgia, "Noto Serif SC", serif;
+  transition:
+    background 140ms ease,
+    border-color 140ms ease,
+    transform 140ms ease,
+    opacity 140ms ease;
+
+  &:hover:not(:disabled) {
+    border-color: @teal;
+    background: #2c4339;
+    transform: translateY(-1px);
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.42;
+  }
+}
+
+.shell {
+  display: grid;
+  grid-template-columns: 340px 1fr;
+  width: 100%;
+  height: 100%;
+}
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  min-height: 0;
+  padding: 1rem;
+  border-right: 1px solid @line;
+  background: linear-gradient(180deg, #1c271f, @panel);
+  overflow: auto;
+}
+
+.brand {
+  h1 {
+    margin: 0.15rem 0 0;
+    font-size: 2.5rem;
+    line-height: 0.95;
+    letter-spacing: 0;
+  }
+}
+
+.eyebrow,
+.label,
+.meta {
+  margin: 0;
+  color: @gold;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.summary {
+  margin: 0.75rem 0 0;
+  color: @muted;
+  line-height: 1.55;
+}
+
+.section {
+  padding-top: 1rem;
+  border-top: 1px solid @line;
+}
+
+.section-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.8rem;
+  margin-bottom: 0.72rem;
+
+  h2 {
+    margin: 0;
+    font-size: 1rem;
+  }
+}
+
+.meta {
+  max-width: 13rem;
+  color: #9dddcf;
+  text-align: right;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.level-list,
+.actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.55rem;
+}
+
+.level-list {
+  button {
+    text-align: left;
+
+    &.active {
+      color: #17211b;
+      background: linear-gradient(135deg, @gold, @teal);
+    }
+  }
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5rem;
+}
+
+.stat {
+  min-width: 0;
+  padding: 0.65rem;
+  border: 1px solid @line;
+  border-radius: 8px;
+  background: @panel-soft;
+
+  strong {
+    display: block;
+    margin-top: 0.2rem;
+    font-size: 1.35rem;
+    letter-spacing: 0;
+    white-space: nowrap;
+  }
+}
+
+.message {
+  min-height: 3.5rem;
+  margin: 0;
+  color: @ink;
+  line-height: 1.55;
+}
+
+.history-list {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.history-item {
+  display: grid;
+  gap: 0.2rem;
+  padding: 0.62rem;
+  border: 1px solid @line;
+  border-radius: 8px;
+  background: #202922;
+
+  span {
+    color: @muted;
+  }
+}
+
+.empty {
+  margin: 0;
+  color: @muted;
+}
+
+.stage {
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+    #0f1914;
+  background-size: 36px 36px;
+  overflow: hidden;
+
+  canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+    touch-action: none;
+  }
+}
+
+.hud {
+  pointer-events: none;
+  position: absolute;
+  right: 1rem;
+  bottom: 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+
+  span {
+    padding: 0.5rem 0.62rem;
+    border: 1px solid fade(@gold, 38%);
+    border-radius: 8px;
+    color: @ink;
+    background: fade(@bg, 72%);
+    backdrop-filter: blur(12px);
+    font-size: 0.82rem;
+  }
+}
+
+@media (max-width: 900px) {
+  body {
+    overflow: auto;
+  }
+
+  #app {
+    height: auto;
+    min-height: 100%;
+  }
+
+  .shell {
+    grid-template-columns: 1fr;
+    height: auto;
+    min-height: 100%;
+  }
+
+  .stage {
+    order: 1;
+    min-height: 62vh;
+  }
+
+  .panel {
+    order: 2;
+    border-top: 1px solid @line;
+    border-right: 0;
+  }
+}
+
+@media (max-width: 560px) {
+  .panel {
+    padding: 0.75rem;
+  }
+
+  .brand h1 {
+    font-size: 2rem;
+  }
+
+  .level-list,
+  .actions {
+    grid-template-columns: 1fr;
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
