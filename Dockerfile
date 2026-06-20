@@ -3,6 +3,9 @@ FROM node:20-alpine AS builder
 
 WORKDIR /app
 
+# 确保本地安装的可执行文件在 PATH 中（例如 node_modules/.bin/tsc）
+ENV PATH=/app/node_modules/.bin:$PATH
+
 # 复制 package.json 和 package-lock.json
 COPY package*.json ./
 
