@@ -167,16 +167,18 @@ function GameApp({ initialState }: { initialState: AppState }) {
   const [state, setState] = useState<AppState>(() => initialState);
   const [elapsed, setElapsed] = useState(0);
   const [moreOpen, setMoreOpen] = useState(false);
+  const stateRef = useRef<AppState>(initialState);
+  const elapsedRef = useRef(0);
   const wonRef = useRef(false);
 
   if (!audioRef.current) {
-    console.log('[App] createGameAudio');
     audioRef.current = createGameAudio();
   }
 
   const level = getLevel(state.currentLevel);
   const moves = findAvailableMoves(state.game.tiles);
   const remaining = remainingTiles(state.game.tiles).length;
+  const boardRemaining = countBoardTiles(state.game);
   const clearedPairs = Math.round((state.game.tiles.length - remaining) / 2);
   const totalPairs = Math.max(1, Math.floor(state.game.tiles.length / 2));
   const iq = useMemo(
@@ -194,13 +196,22 @@ function GameApp({ initialState }: { initialState: AppState }) {
   const hintRemaining = Math.max(0, level.hintCount - state.hintCount);
   const undoRemaining = Math.max(0, level.undoCount - state.undoCount);
   const sceneKey = `${state.currentLevel}:${state.game.seed}`;
+
   useEffect(() => {
-    if (state.page !== 'game' || remaining !== 0 || wonRef.current) {
+    stateRef.current = state;
+  }, [state]);
+
+  useEffect(() => {
+    elapsedRef.current = elapsed;
+  }, [elapsed]);
+
+  useEffect(() => {
+    if (state.page !== 'game' || boardRemaining !== 0 || wonRef.current) {
       return;
     }
 
-    setState((current) => completeStateIfWon(current, elapsed, wonRef));
-  }, [elapsed, remaining, state.page]);
+    setState((current) => completeStateFromBoardClear(current, cloneGame(current.game), elapsed, wonRef));
+  }, [boardRemaining, elapsed, state.page]);
 
   useEffect(() => {
     if (!canvasRef.current || state.page !== 'game') {
@@ -262,152 +273,20 @@ function GameApp({ initialState }: { initialState: AppState }) {
   }
 
   function handleTileClick(tileId: string) {
-    console.log('[App] handleTileClick', { tileId });
-    let sound: 'select' | 'peng' | 'fail' | null = null;
-
-    setState((current) => {
-      console.log('[App] handleTileClick state', { page: current.page, queueLength: current.game.stepQueue.tileIds.length });
-
-      if (current.page !== 'game') {
-        console.log('[App] handleTileClick ignored because page is not game', { page: current.page });
-        return current;
-      }
-
-      const game = cloneGame(current.game);
-      const tile = game.tiles.find((candidate) => candidate.id === tileId);
-
-      console.log('[App] handleTileClick tileState', {
-        tileId,
-        tileExists: Boolean(tile),
-        removed: tile?.removed,
-        state: tile?.state,
-        isFree: tile ? isTileFree(game.tiles, tileId) : undefined,
-        inStepQueue: game.stepQueue.tileIds.includes(tileId),
-        queuedLength: game.stepQueue.tileIds.length,
-      });
-
-      if (!tile || tile.removed) {
-        console.log('[App] handleTileClick missing or removed tile', { tileId });
-        sound = 'fail';
-        return current;
-      }
-
-      if (game.stepQueue.tileIds.includes(tileId)) {
-        const queuedTile = game.tiles.find((candidate) => candidate.id === tileId);
-
-        if (queuedTile) {
-          queuedTile.state = 'active';
-        }
-
-        game.stepQueue = {
-          tileIds: game.stepQueue.tileIds.filter((id) => id !== tileId),
-          matchingTileIds: [],
-        };
-        game.message = '已从托牌槽移回牌桌。';
-        sound = 'select';
-        return { ...current, game };
-      }
-
-      if (!isTileFree(game.tiles, tileId)) {
-        game.message = '这张牌还没解锁。先清掉上层或旁边的阻挡。';
-        sound = 'fail';
-        return { ...current, game };
-      }
-
-      const queueResult = enqueueTile(game.stepQueue, tile, game.tiles);
-      console.log('[App] handleTileClick queueResult', queueResult);
-
-      if (!queueResult.accepted) {
-        game.message = '托牌槽已满，本关失败。';
-        sound = 'fail';
-        return {
-          ...current,
-          page: 'failed',
-          game,
-          failed: {
-            level: current.currentLevel,
-            reason: '托牌槽已满，且四张牌之间无法配对。',
-            elapsedSeconds: elapsed,
-            queuedFaces: game.stepQueue.tileIds.map((id) => game.tiles.find((candidate) => candidate.id === id)?.face ?? ''),
-          },
-        };
-      }
-
-      game.stepQueue = queueResult.queue;
-      game.selectedId = queueResult.matchedTileIds.length === 0 ? tileId : null;
-
-      if (queueResult.matchedTileIds.length === 0) {
-        const queuedTile = game.tiles.find((candidate) => candidate.id === tileId);
-
-        if (queuedTile) {
-          queuedTile.state = 'queued';
-        }
-
-        if (queueResult.queue.tileIds.length >= STEP_QUEUE_MAX_SIZE) {
-          game.message = '托牌槽已满，本关失败。';
-          sound = 'fail';
-          return {
-            ...current,
-            page: 'failed',
-            game,
-            failed: {
-              level: current.currentLevel,
-              reason: '托牌槽已满，且四张牌之间无法配对。',
-              elapsedSeconds: elapsed,
-              queuedFaces: queueResult.queue.tileIds.map((id) => game.tiles.find((candidate) => candidate.id === id)?.face ?? ''),
-            },
-          };
-        }
-
-        if (!canContinueWithStepQueue(game)) {
-          sound = 'fail';
-          return failStateForNoStepQueueMoves(current, game, elapsed);
-        }
-
-        game.message = '已放入托牌槽，继续寻找可配对牌。';
-        sound = 'select';
-        return { ...current, game };
-      }
-
-      const [firstId, secondId] = queueResult.matchedTileIds;
-      const result = removePair(game, firstId, secondId);
-      game.stepQueue = queueResult.queue;
-
-      console.log('[App] handleTileClick matchedIds', { firstId, secondId, result });
-
-      if (!result.ok) {
-        console.log('[App] handleTileClick removePair failed', { firstId, secondId, message: result.message });
-        sound = 'fail';
-        return { ...current, game };
-      }
-
-      for (const matchedId of queueResult.matchedTileIds) {
-        const matchedTile = game.tiles.find((candidate) => candidate.id === matchedId);
-
-        if (matchedTile) {
-          matchedTile.state = 'removed';
-        }
-      }
-
-      sound = 'peng';
-
-      if (isWon(game) && !wonRef.current) {
-        return completeStateIfWon({ ...current, game }, elapsed, wonRef);
-      }
-
-      if (!canContinueWithStepQueue(game)) {
-        sound = 'fail';
-        return failStateForNoStepQueueMoves(current, game, elapsed);
-      }
-
-      return { ...current, game };
+    const currentState = stateRef.current;
+    const { nextState, sound } = calculateTileClickResult(currentState, tileId, {
+      currentLevel: currentState.currentLevel,
+      elapsed: elapsedRef.current,
+      wonRef,
     });
 
+    if (nextState) {
+      stateRef.current = nextState;
+      setState(nextState);
+    }
+
     if (sound) {
-      console.log('[App] handleTileClick play sound', sound, { tileId });
       audioRef.current?.play(sound);
-    } else {
-      console.log('[App] handleTileClick no sound', { tileId });
     }
   }
 
@@ -903,6 +782,37 @@ function completeStateIfWon(current: AppState, elapsedSeconds: number, wonRef: R
   return completeGame(current, elapsedSeconds).nextState;
 }
 
+function completeStateFromBoardClear(
+  current: AppState,
+  game: GameState,
+  elapsedSeconds: number,
+  wonRef: React.MutableRefObject<boolean>,
+) {
+  if (current.page !== 'game' || wonRef.current || countBoardTiles(game) !== 0) {
+    return current;
+  }
+
+  if (game.stepQueue.tileIds.length > 0) {
+    for (const queuedId of game.stepQueue.tileIds) {
+      const queuedTile = game.tiles.find((candidate) => candidate.id === queuedId);
+
+      if (queuedTile) {
+        queuedTile.removed = true;
+        queuedTile.state = 'removed';
+      }
+    }
+
+    game.stepQueue = {
+      tileIds: [],
+      matchingTileIds: [],
+    };
+    game.selectedId = null;
+    game.message = '牌桌已清空，托牌槽剩余牌已自动结算。';
+  }
+
+  return completeStateIfWon({ ...current, game }, elapsedSeconds, wonRef);
+}
+
 function failStateForNoStepQueueMoves(current: AppState, game: GameState, elapsedSeconds: number): AppState {
   const activeCount = game.tiles.filter((tile) => !tile.removed && tile.state !== 'queued').length;
   const reason = activeCount === 0
@@ -947,4 +857,163 @@ function formatDuration(totalSeconds: number) {
   const minutes = String(Math.floor(totalSeconds / 60)).padStart(2, '0');
   const seconds = String(totalSeconds % 60).padStart(2, '0');
   return `${minutes}:${seconds}`;
+}
+
+function countBoardTiles(game: GameState) {
+  return game.tiles.filter(
+    (tile) => !tile.removed && tile.state !== 'queued' && tile.state !== 'matching' && tile.state !== 'animating',
+  ).length;
+}
+
+interface CalculateTileClickResultOptions {
+  currentLevel: number;
+  elapsed: number;
+  wonRef: React.MutableRefObject<boolean>;
+}
+
+function calculateTileClickResult(
+  current: AppState,
+  tileId: string,
+  options: CalculateTileClickResultOptions
+): { nextState: AppState | null; sound: 'select' | 'peng' | 'fail' | null } {
+  let sound: 'select' | 'peng' | 'fail' | null = null;
+
+  if (current.page !== 'game') {
+    return { nextState: current, sound: null };
+  }
+
+  const game = cloneGame(current.game);
+  const tile = game.tiles.find((candidate) => candidate.id === tileId);
+
+  if (!tile || tile.removed) {
+    sound = 'fail';
+    return { nextState: current, sound };
+  }
+
+  if (game.stepQueue.tileIds.includes(tileId)) {
+    const queuedTile = game.tiles.find((candidate) => candidate.id === tileId);
+
+    if (queuedTile) {
+      queuedTile.state = 'active';
+    }
+
+    game.stepQueue = {
+      tileIds: game.stepQueue.tileIds.filter((id) => id !== tileId),
+      matchingTileIds: [],
+    };
+    game.message = '已从托牌槽移回牌桌。';
+    sound = 'select';
+    return { nextState: { ...current, game }, sound };
+  }
+
+  if (!isTileFree(game.tiles, tileId)) {
+    game.message = '这张牌还没解锁。先清掉上层或旁边的阻挡。';
+    sound = 'fail';
+    return { nextState: { ...current, game }, sound };
+  }
+
+  const queueResult = enqueueTile(game.stepQueue, tile, game.tiles);
+
+  if (!queueResult.accepted) {
+    game.message = '托牌槽已满，本关失败。';
+    sound = 'fail';
+    return {
+      nextState: {
+        ...current,
+        page: 'failed',
+        game,
+        failed: {
+          level: current.currentLevel,
+          reason: '托牌槽已满，且四张牌之间无法配对。',
+          elapsedSeconds: options.elapsed,
+          queuedFaces: game.stepQueue.tileIds.map((id) => game.tiles.find((candidate) => candidate.id === id)?.face ?? ''),
+        },
+      },
+      sound,
+    };
+  }
+
+  game.stepQueue = queueResult.queue;
+  game.selectedId = queueResult.matchedTileIds.length === 0 ? tileId : null;
+
+  if (queueResult.matchedTileIds.length === 0) {
+    const queuedTile = game.tiles.find((candidate) => candidate.id === tileId);
+
+    if (queuedTile) {
+      queuedTile.state = 'queued';
+    }
+
+    if (countBoardTiles(game) === 0) {
+      sound = 'peng';
+      return {
+        nextState: completeStateFromBoardClear(current, game, options.elapsed, options.wonRef),
+        sound,
+      };
+    }
+
+    if (queueResult.queue.tileIds.length >= STEP_QUEUE_MAX_SIZE) {
+      game.message = '托牌槽已满，本关失败。';
+      sound = 'fail';
+      return {
+        nextState: {
+          ...current,
+          page: 'failed',
+          game,
+          failed: {
+            level: current.currentLevel,
+            reason: '托牌槽已满，且四张牌之间无法配对。',
+            elapsedSeconds: options.elapsed,
+            queuedFaces: queueResult.queue.tileIds.map((id) => game.tiles.find((candidate) => candidate.id === id)?.face ?? ''),
+          },
+        },
+        sound,
+      };
+    }
+
+    if (!canContinueWithStepQueue(game)) {
+      sound = 'fail';
+      return { nextState: failStateForNoStepQueueMoves(current, game, options.elapsed), sound };
+    }
+
+    game.message = '已放入托牌槽，继续寻找可配对牌。';
+    sound = 'select';
+    return { nextState: { ...current, game }, sound };
+  }
+
+  const [firstId, secondId] = queueResult.matchedTileIds;
+  const result = removePair(game, firstId, secondId);
+  game.stepQueue = queueResult.queue;
+
+  if (!result.ok) {
+    sound = 'fail';
+    return { nextState: { ...current, game }, sound };
+  }
+
+  for (const matchedId of queueResult.matchedTileIds) {
+    const matchedTile = game.tiles.find((candidate) => candidate.id === matchedId);
+
+    if (matchedTile) {
+      matchedTile.state = 'removed';
+    }
+  }
+
+  sound = 'peng';
+
+  if (isWon(game) && !options.wonRef.current) {
+    return { nextState: completeStateIfWon({ ...current, game }, options.elapsed, options.wonRef), sound };
+  }
+
+  if (countBoardTiles(game) === 0) {
+    return {
+      nextState: completeStateFromBoardClear(current, game, options.elapsed, options.wonRef),
+      sound,
+    };
+  }
+
+  if (!canContinueWithStepQueue(game)) {
+    sound = 'fail';
+    return { nextState: failStateForNoStepQueueMoves(current, game, options.elapsed), sound };
+  }
+
+  return { nextState: { ...current, game }, sound };
 }

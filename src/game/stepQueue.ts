@@ -28,13 +28,6 @@ export function canAcceptTile(queue: StepQueueState, tile: Tile, tiles: Tile[]) 
 export function enqueueTile(queue: StepQueueState, tile: Tile, tiles: Tile[]): StepQueueResult {
   const match = findEarliestMatch(queue, tile, tiles);
 
-  try {
-    const queuedFaces = queue.tileIds.map((id) => tiles.find((t) => t.id === id)?.face ?? null);
-    console.log('[stepQueue] enqueueTile', { tileId: tile.id, tileFace: tile.face, queueTileIds: queue.tileIds, queuedFaces, matchId: match?.id, matchFace: match?.face });
-  } catch (e) {
-    // ignore logging errors in environments without console
-  }
-
   if (match) {
     const matchedTileIds = [match.id, tile.id];
 
