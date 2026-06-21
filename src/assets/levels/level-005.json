@@ -3,7 +3,7 @@
   "id": 5,
   "name": "黑洞外环",
   "subtitle": "参考 Black Hole 的环形缺口，中心需要绕行打开。",
-  "seed": "generated-level-005",
+  "seed": "generated-level-005-candidate-14",
   "queue": {
     "capacity": 4
   },
@@ -12,710 +12,710 @@
   "comboBreakSeconds": 7,
   "tiles": [
     {
-      "id": "l5-p0-0",
-      "face": "B1",
-      "x": 3,
-      "y": 7,
-      "z": 0,
-      "solutionPair": 38
-    },
-    {
-      "id": "l5-p0-1",
-      "face": "B1",
-      "x": 4,
-      "y": 7,
-      "z": 0,
-      "solutionPair": 38
-    },
-    {
-      "id": "l5-p1-0",
+      "id": "l5-p7-1",
       "face": "C4",
       "x": 2,
       "y": 4,
-      "z": 0,
-      "solutionPair": 30
+      "z": 1,
+      "solutionPair": 8
     },
     {
-      "id": "l5-p1-1",
-      "face": "C4",
-      "x": 5,
-      "y": 5,
-      "z": 0,
-      "solutionPair": 30
-    },
-    {
-      "id": "l5-p2-0",
-      "face": "E",
+      "id": "l5-p5-0",
+      "face": "D4",
       "x": 3,
-      "y": 6,
+      "y": 3,
+      "z": 2,
+      "solutionPair": 6
+    },
+    {
+      "id": "l5-p19-1",
+      "face": "S1",
+      "x": 1,
+      "y": 1,
       "z": 0,
-      "solutionPair": 37
+      "solutionPair": 20
     },
     {
       "id": "l5-p2-1",
-      "face": "E",
+      "face": "D1",
+      "x": 2,
+      "y": 1,
+      "z": 1,
+      "solutionPair": 3
+    },
+    {
+      "id": "l5-p37-1",
+      "face": "B1",
       "x": 4,
+      "y": 7,
+      "z": 0,
+      "solutionPair": 38
+    },
+    {
+      "id": "l5-p27-1",
+      "face": "C7",
+      "x": 2,
+      "y": 4,
+      "z": 0,
+      "solutionPair": 28
+    },
+    {
+      "id": "l5-p4-0",
+      "face": "C5",
+      "x": 3,
+      "y": 2,
+      "z": 2,
+      "solutionPair": 5
+    },
+    {
+      "id": "l5-p0-0",
+      "face": "B4",
+      "x": 5,
+      "y": 2,
+      "z": 2,
+      "solutionPair": 1
+    },
+    {
+      "id": "l5-p35-1",
+      "face": "B7",
+      "x": 3,
+      "y": 2,
+      "z": 0,
+      "solutionPair": 36
+    },
+    {
+      "id": "l5-p6-1",
+      "face": "D7",
+      "x": 5,
+      "y": 2,
+      "z": 1,
+      "solutionPair": 7
+    },
+    {
+      "id": "l5-p26-1",
+      "face": "B4",
+      "x": 2,
       "y": 6,
       "z": 0,
-      "solutionPair": 37
+      "solutionPair": 27
     },
     {
-      "id": "l5-p3-0",
-      "face": "C1",
-      "x": 3,
-      "y": 3,
-      "z": 1,
-      "solutionPair": 14
-    },
-    {
-      "id": "l5-p3-1",
-      "face": "C1",
-      "x": 3,
+      "id": "l5-p13-0",
+      "face": "WHITE",
+      "x": 4,
       "y": 4,
       "z": 1,
       "solutionPair": 14
     },
     {
-      "id": "l5-p4-0",
+      "id": "l5-p33-1",
+      "face": "C9",
+      "x": 4,
+      "y": 5,
+      "z": 0,
+      "solutionPair": 34
+    },
+    {
+      "id": "l5-p24-0",
       "face": "B4",
-      "x": 1,
-      "y": 6,
+      "x": 6,
+      "y": 3,
       "z": 0,
       "solutionPair": 25
     },
     {
-      "id": "l5-p4-1",
+      "id": "l5-p21-0",
+      "face": "C3",
+      "x": 7,
+      "y": 7,
+      "z": 0,
+      "solutionPair": 22
+    },
+    {
+      "id": "l5-p23-0",
+      "face": "S2",
+      "x": 6,
+      "y": 1,
+      "z": 0,
+      "solutionPair": 24
+    },
+    {
+      "id": "l5-p3-0",
+      "face": "C7",
+      "x": 4,
+      "y": 3,
+      "z": 2,
+      "solutionPair": 4
+    },
+    {
+      "id": "l5-p15-0",
+      "face": "C8",
+      "x": 3,
+      "y": 4,
+      "z": 1,
+      "solutionPair": 16
+    },
+    {
+      "id": "l5-p1-0",
+      "face": "C3",
+      "x": 5,
+      "y": 3,
+      "z": 2,
+      "solutionPair": 2
+    },
+    {
+      "id": "l5-p31-0",
+      "face": "D7",
+      "x": 5,
+      "y": 5,
+      "z": 0,
+      "solutionPair": 32
+    },
+    {
+      "id": "l5-p22-0",
+      "face": "D1",
+      "x": 6,
+      "y": 0,
+      "z": 0,
+      "solutionPair": 23
+    },
+    {
+      "id": "l5-p26-0",
       "face": "B4",
       "x": 6,
       "y": 6,
       "z": 0,
-      "solutionPair": 25
+      "solutionPair": 27
     },
     {
-      "id": "l5-p5-0",
-      "face": "D5",
-      "x": 3,
+      "id": "l5-p0-1",
+      "face": "B4",
+      "x": 2,
+      "y": 3,
+      "z": 2,
+      "solutionPair": 1
+    },
+    {
+      "id": "l5-p29-0",
+      "face": "D4",
+      "x": 5,
       "y": 1,
-      "z": 1,
-      "solutionPair": 13
+      "z": 0,
+      "solutionPair": 30
     },
     {
-      "id": "l5-p5-1",
-      "face": "D5",
+      "id": "l5-p30-1",
+      "face": "C5",
       "x": 3,
-      "y": 2,
-      "z": 1,
-      "solutionPair": 13
-    },
-    {
-      "id": "l5-p6-0",
-      "face": "D8",
-      "x": 0,
-      "y": 2,
+      "y": 0,
       "z": 0,
-      "solutionPair": 17
+      "solutionPair": 31
     },
     {
-      "id": "l5-p6-1",
-      "face": "D8",
-      "x": 7,
-      "y": 3,
-      "z": 0,
-      "solutionPair": 17
-    },
-    {
-      "id": "l5-p7-0",
-      "face": "B1",
+      "id": "l5-p29-1",
+      "face": "D4",
       "x": 2,
-      "y": 2,
-      "z": 2,
-      "solutionPair": 3
-    },
-    {
-      "id": "l5-p7-1",
-      "face": "B1",
-      "x": 3,
-      "y": 2,
-      "z": 2,
-      "solutionPair": 3
-    },
-    {
-      "id": "l5-p8-0",
-      "face": "C2",
-      "x": 2,
-      "y": 2,
+      "y": 7,
       "z": 0,
-      "solutionPair": 29
-    },
-    {
-      "id": "l5-p8-1",
-      "face": "C2",
-      "x": 5,
-      "y": 3,
-      "z": 0,
-      "solutionPair": 29
-    },
-    {
-      "id": "l5-p9-0",
-      "face": "E",
-      "x": 3,
-      "y": 4,
-      "z": 0,
-      "solutionPair": 36
-    },
-    {
-      "id": "l5-p9-1",
-      "face": "E",
-      "x": 4,
-      "y": 5,
-      "z": 0,
-      "solutionPair": 36
-    },
-    {
-      "id": "l5-p10-0",
-      "face": "N",
-      "x": 5,
-      "y": 2,
-      "z": 2,
-      "solutionPair": 1
-    },
-    {
-      "id": "l5-p10-1",
-      "face": "N",
-      "x": 5,
-      "y": 3,
-      "z": 2,
-      "solutionPair": 1
-    },
-    {
-      "id": "l5-p11-0",
-      "face": "RED",
-      "x": 4,
-      "y": 2,
-      "z": 2,
-      "solutionPair": 2
-    },
-    {
-      "id": "l5-p11-1",
-      "face": "RED",
-      "x": 4,
-      "y": 3,
-      "z": 2,
-      "solutionPair": 2
-    },
-    {
-      "id": "l5-p12-0",
-      "face": "E",
-      "x": 2,
-      "y": 3,
-      "z": 2,
-      "solutionPair": 4
+      "solutionPair": 30
     },
     {
       "id": "l5-p12-1",
-      "face": "E",
+      "face": "D8",
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "solutionPair": 13
+    },
+    {
+      "id": "l5-p33-0",
+      "face": "C9",
+      "x": 5,
+      "y": 7,
+      "z": 0,
+      "solutionPair": 34
+    },
+    {
+      "id": "l5-p8-1",
+      "face": "C9",
       "x": 3,
-      "y": 3,
-      "z": 2,
-      "solutionPair": 4
-    },
-    {
-      "id": "l5-p13-0",
-      "face": "RED",
-      "x": 2,
-      "y": 3,
-      "z": 1,
-      "solutionPair": 11
-    },
-    {
-      "id": "l5-p13-1",
-      "face": "RED",
-      "x": 4,
-      "y": 3,
-      "z": 1,
-      "solutionPair": 11
-    },
-    {
-      "id": "l5-p14-0",
-      "face": "C1",
-      "x": 2,
-      "y": 2,
-      "z": 1,
-      "solutionPair": 10
-    },
-    {
-      "id": "l5-p14-1",
-      "face": "C1",
-      "x": 4,
-      "y": 2,
-      "z": 1,
-      "solutionPair": 10
-    },
-    {
-      "id": "l5-p15-0",
-      "face": "D1",
-      "x": 2,
       "y": 1,
       "z": 1,
       "solutionPair": 9
     },
     {
-      "id": "l5-p15-1",
+      "id": "l5-p31-1",
+      "face": "D7",
+      "x": 3,
+      "y": 1,
+      "z": 0,
+      "solutionPair": 32
+    },
+    {
+      "id": "l5-p2-0",
       "face": "D1",
       "x": 4,
+      "y": 2,
+      "z": 2,
+      "solutionPair": 3
+    },
+    {
+      "id": "l5-p35-0",
+      "face": "B7",
+      "x": 4,
       "y": 1,
+      "z": 0,
+      "solutionPair": 36
+    },
+    {
+      "id": "l5-p6-0",
+      "face": "D7",
+      "x": 6,
+      "y": 4,
+      "z": 1,
+      "solutionPair": 7
+    },
+    {
+      "id": "l5-p18-0",
+      "face": "F1",
+      "x": 7,
+      "y": 3,
+      "z": 0,
+      "solutionPair": 19
+    },
+    {
+      "id": "l5-p9-0",
+      "face": "E",
+      "x": 5,
+      "y": 4,
+      "z": 1,
+      "solutionPair": 10
+    },
+    {
+      "id": "l5-p7-0",
+      "face": "C4",
+      "x": 5,
+      "y": 1,
+      "z": 1,
+      "solutionPair": 8
+    },
+    {
+      "id": "l5-p17-1",
+      "face": "N",
+      "x": 0,
+      "y": 7,
+      "z": 0,
+      "solutionPair": 18
+    },
+    {
+      "id": "l5-p8-0",
+      "face": "C9",
+      "x": 5,
+      "y": 3,
       "z": 1,
       "solutionPair": 9
     },
     {
       "id": "l5-p16-0",
       "face": "S",
-      "x": 1,
-      "y": 1,
-      "z": 0,
-      "solutionPair": 22
-    },
-    {
-      "id": "l5-p16-1",
-      "face": "S",
-      "x": 6,
-      "y": 1,
-      "z": 0,
-      "solutionPair": 22
-    },
-    {
-      "id": "l5-p17-0",
-      "face": "GREEN",
-      "x": 2,
-      "y": 4,
-      "z": 1,
-      "solutionPair": 12
-    },
-    {
-      "id": "l5-p17-1",
-      "face": "GREEN",
-      "x": 4,
-      "y": 4,
-      "z": 1,
-      "solutionPair": 12
-    },
-    {
-      "id": "l5-p18-0",
-      "face": "S4",
-      "x": 0,
-      "y": 7,
-      "z": 0,
-      "solutionPair": 20
-    },
-    {
-      "id": "l5-p18-1",
-      "face": "S4",
       "x": 7,
-      "y": 7,
+      "y": 0,
       "z": 0,
-      "solutionPair": 20
+      "solutionPair": 17
     },
     {
       "id": "l5-p19-0",
-      "face": "E",
-      "x": 2,
-      "y": 7,
-      "z": 0,
-      "solutionPair": 32
-    },
-    {
-      "id": "l5-p19-1",
-      "face": "E",
-      "x": 5,
-      "y": 7,
-      "z": 0,
-      "solutionPair": 32
-    },
-    {
-      "id": "l5-p20-0",
-      "face": "WHITE",
-      "x": 2,
-      "y": 0,
-      "z": 0,
-      "solutionPair": 27
-    },
-    {
-      "id": "l5-p20-1",
-      "face": "WHITE",
-      "x": 5,
-      "y": 0,
-      "z": 0,
-      "solutionPair": 27
-    },
-    {
-      "id": "l5-p21-0",
-      "face": "F3",
-      "x": 3,
-      "y": 2,
-      "z": 0,
-      "solutionPair": 35
-    },
-    {
-      "id": "l5-p21-1",
-      "face": "F3",
-      "x": 4,
-      "y": 3,
-      "z": 0,
-      "solutionPair": 35
-    },
-    {
-      "id": "l5-p22-0",
-      "face": "D5",
-      "x": 1,
-      "y": 4,
-      "z": 0,
-      "solutionPair": 24
-    },
-    {
-      "id": "l5-p22-1",
-      "face": "D5",
-      "x": 6,
+      "face": "S1",
+      "x": 7,
       "y": 5,
       "z": 0,
-      "solutionPair": 24
-    },
-    {
-      "id": "l5-p23-0",
-      "face": "C3",
-      "x": 0,
-      "y": 6,
-      "z": 0,
-      "solutionPair": 19
+      "solutionPair": 20
     },
     {
       "id": "l5-p23-1",
-      "face": "C3",
-      "x": 7,
-      "y": 6,
-      "z": 0,
-      "solutionPair": 19
-    },
-    {
-      "id": "l5-p24-0",
-      "face": "N",
-      "x": 0,
-      "y": 4,
-      "z": 0,
-      "solutionPair": 18
-    },
-    {
-      "id": "l5-p24-1",
-      "face": "N",
-      "x": 7,
-      "y": 5,
-      "z": 0,
-      "solutionPair": 18
-    },
-    {
-      "id": "l5-p25-0",
-      "face": "D5",
+      "face": "S2",
       "x": 1,
       "y": 7,
       "z": 0,
-      "solutionPair": 26
+      "solutionPair": 24
     },
     {
-      "id": "l5-p25-1",
-      "face": "D5",
-      "x": 6,
-      "y": 7,
+      "id": "l5-p34-1",
+      "face": "E",
+      "x": 3,
+      "y": 4,
       "z": 0,
-      "solutionPair": 26
+      "solutionPair": 35
     },
     {
-      "id": "l5-p26-0",
-      "face": "B4",
-      "x": 6,
+      "id": "l5-p36-0",
+      "face": "B7",
+      "x": 4,
+      "y": 3,
+      "z": 0,
+      "solutionPair": 37
+    },
+    {
+      "id": "l5-p5-1",
+      "face": "D4",
+      "x": 1,
       "y": 1,
       "z": 1,
-      "solutionPair": 5
+      "solutionPair": 6
     },
     {
-      "id": "l5-p26-1",
-      "face": "B4",
-      "x": 6,
-      "y": 4,
-      "z": 1,
-      "solutionPair": 5
-    },
-    {
-      "id": "l5-p27-0",
-      "face": "F2",
+      "id": "l5-p9-1",
+      "face": "E",
       "x": 2,
-      "y": 1,
-      "z": 0,
-      "solutionPair": 28
-    },
-    {
-      "id": "l5-p27-1",
-      "face": "F2",
-      "x": 5,
-      "y": 1,
-      "z": 0,
-      "solutionPair": 28
-    },
-    {
-      "id": "l5-p28-0",
-      "face": "N",
-      "x": 1,
-      "y": 1,
+      "y": 2,
       "z": 1,
-      "solutionPair": 6
+      "solutionPair": 10
     },
     {
-      "id": "l5-p28-1",
-      "face": "N",
-      "x": 5,
-      "y": 1,
-      "z": 1,
-      "solutionPair": 6
-    },
-    {
-      "id": "l5-p29-0",
-      "face": "B2",
+      "id": "l5-p20-1",
+      "face": "B4",
       "x": 1,
       "y": 2,
       "z": 0,
-      "solutionPair": 23
-    },
-    {
-      "id": "l5-p29-1",
-      "face": "B2",
-      "x": 6,
-      "y": 3,
-      "z": 0,
-      "solutionPair": 23
-    },
-    {
-      "id": "l5-p30-0",
-      "face": "F1",
-      "x": 3,
-      "y": 1,
-      "z": 0,
-      "solutionPair": 34
-    },
-    {
-      "id": "l5-p30-1",
-      "face": "F1",
-      "x": 4,
-      "y": 1,
-      "z": 0,
-      "solutionPair": 34
-    },
-    {
-      "id": "l5-p31-0",
-      "face": "D1",
-      "x": 2,
-      "y": 6,
-      "z": 0,
-      "solutionPair": 31
-    },
-    {
-      "id": "l5-p31-1",
-      "face": "D1",
-      "x": 5,
-      "y": 6,
-      "z": 0,
-      "solutionPair": 31
+      "solutionPair": 21
     },
     {
       "id": "l5-p32-0",
-      "face": "F4",
-      "x": 0,
-      "y": 0,
+      "face": "C4",
+      "x": 5,
+      "y": 6,
       "z": 0,
+      "solutionPair": 33
+    },
+    {
+      "id": "l5-p30-0",
+      "face": "C5",
+      "x": 5,
+      "y": 3,
+      "z": 0,
+      "solutionPair": 31
+    },
+    {
+      "id": "l5-p14-0",
+      "face": "B5",
+      "x": 3,
+      "y": 2,
+      "z": 1,
       "solutionPair": 15
     },
     {
       "id": "l5-p32-1",
-      "face": "F4",
+      "face": "C4",
+      "x": 4,
+      "y": 6,
+      "z": 0,
+      "solutionPair": 33
+    },
+    {
+      "id": "l5-p3-1",
+      "face": "C7",
+      "x": 1,
+      "y": 4,
+      "z": 1,
+      "solutionPair": 4
+    },
+    {
+      "id": "l5-p28-1",
+      "face": "C5",
+      "x": 2,
+      "y": 2,
+      "z": 0,
+      "solutionPair": 29
+    },
+    {
+      "id": "l5-p27-0",
+      "face": "C7",
+      "x": 6,
+      "y": 7,
+      "z": 0,
+      "solutionPair": 28
+    },
+    {
+      "id": "l5-p11-1",
+      "face": "B1",
+      "x": 3,
+      "y": 3,
+      "z": 1,
+      "solutionPair": 12
+    },
+    {
+      "id": "l5-p1-1",
+      "face": "C3",
+      "x": 2,
+      "y": 2,
+      "z": 2,
+      "solutionPair": 2
+    },
+    {
+      "id": "l5-p25-1",
+      "face": "D1",
+      "x": 2,
+      "y": 1,
+      "z": 0,
+      "solutionPair": 26
+    },
+    {
+      "id": "l5-p20-0",
+      "face": "B4",
       "x": 7,
+      "y": 6,
+      "z": 0,
+      "solutionPair": 21
+    },
+    {
+      "id": "l5-p34-0",
+      "face": "E",
+      "x": 4,
       "y": 0,
+      "z": 0,
+      "solutionPair": 35
+    },
+    {
+      "id": "l5-p4-1",
+      "face": "C5",
+      "x": 6,
+      "y": 1,
+      "z": 1,
+      "solutionPair": 5
+    },
+    {
+      "id": "l5-p15-1",
+      "face": "C8",
+      "x": 0,
+      "y": 6,
+      "z": 0,
+      "solutionPair": 16
+    },
+    {
+      "id": "l5-p10-0",
+      "face": "B7",
+      "x": 4,
+      "y": 1,
+      "z": 1,
+      "solutionPair": 11
+    },
+    {
+      "id": "l5-p11-0",
+      "face": "B1",
+      "x": 4,
+      "y": 2,
+      "z": 1,
+      "solutionPair": 12
+    },
+    {
+      "id": "l5-p28-0",
+      "face": "C5",
+      "x": 5,
+      "y": 0,
+      "z": 0,
+      "solutionPair": 29
+    },
+    {
+      "id": "l5-p17-0",
+      "face": "N",
+      "x": 7,
+      "y": 1,
+      "z": 0,
+      "solutionPair": 18
+    },
+    {
+      "id": "l5-p13-1",
+      "face": "WHITE",
+      "x": 0,
+      "y": 2,
+      "z": 0,
+      "solutionPair": 14
+    },
+    {
+      "id": "l5-p18-1",
+      "face": "F1",
+      "x": 1,
+      "y": 0,
+      "z": 0,
+      "solutionPair": 19
+    },
+    {
+      "id": "l5-p14-1",
+      "face": "B5",
+      "x": 0,
+      "y": 1,
       "z": 0,
       "solutionPair": 15
     },
     {
-      "id": "l5-p33-0",
-      "face": "C1",
+      "id": "l5-p22-1",
+      "face": "D1",
       "x": 1,
       "y": 4,
-      "z": 1,
-      "solutionPair": 8
-    },
-    {
-      "id": "l5-p33-1",
-      "face": "C1",
-      "x": 5,
-      "y": 4,
-      "z": 1,
-      "solutionPair": 8
-    },
-    {
-      "id": "l5-p34-0",
-      "face": "B4",
-      "x": 3,
-      "y": 0,
       "z": 0,
-      "solutionPair": 33
+      "solutionPair": 23
     },
     {
-      "id": "l5-p34-1",
-      "face": "B4",
+      "id": "l5-p12-0",
+      "face": "D8",
       "x": 4,
-      "y": 0,
-      "z": 0,
-      "solutionPair": 33
-    },
-    {
-      "id": "l5-p35-0",
-      "face": "B2",
-      "x": 1,
-      "y": 0,
-      "z": 0,
-      "solutionPair": 21
-    },
-    {
-      "id": "l5-p35-1",
-      "face": "B2",
-      "x": 6,
-      "y": 0,
-      "z": 0,
-      "solutionPair": 21
-    },
-    {
-      "id": "l5-p36-0",
-      "face": "C7",
-      "x": 5,
-      "y": 2,
+      "y": 3,
       "z": 1,
-      "solutionPair": 7
+      "solutionPair": 13
     },
     {
       "id": "l5-p36-1",
-      "face": "C7",
-      "x": 5,
+      "face": "B7",
+      "x": 3,
+      "y": 6,
+      "z": 0,
+      "solutionPair": 37
+    },
+    {
+      "id": "l5-p16-1",
+      "face": "S",
+      "x": 0,
+      "y": 4,
+      "z": 0,
+      "solutionPair": 17
+    },
+    {
+      "id": "l5-p21-1",
+      "face": "C3",
+      "x": 2,
+      "y": 0,
+      "z": 0,
+      "solutionPair": 22
+    },
+    {
+      "id": "l5-p10-1",
+      "face": "B7",
+      "x": 2,
       "y": 3,
       "z": 1,
-      "solutionPair": 7
+      "solutionPair": 11
     },
     {
       "id": "l5-p37-0",
-      "face": "RED",
-      "x": 0,
-      "y": 1,
+      "face": "B1",
+      "x": 3,
+      "y": 7,
       "z": 0,
-      "solutionPair": 16
+      "solutionPair": 38
     },
     {
-      "id": "l5-p37-1",
-      "face": "RED",
-      "x": 7,
-      "y": 1,
+      "id": "l5-p24-1",
+      "face": "B4",
+      "x": 1,
+      "y": 6,
       "z": 0,
-      "solutionPair": 16
+      "solutionPair": 25
+    },
+    {
+      "id": "l5-p25-0",
+      "face": "D1",
+      "x": 6,
+      "y": 5,
+      "z": 0,
+      "solutionPair": 26
     }
   ],
   "analysis": {
     "solvable": true,
-    "difficultyScore": 9.93,
+    "difficultyScore": 10,
     "iqWeight": 1.2,
     "openingFreeTiles": 21,
-    "openingMatches": 8,
-    "avgBranchingFactor": 14.84,
-    "queuePressureScore": 0.75,
-    "deadEndRisk": 0.11,
+    "openingMatches": 4,
+    "avgBranchingFactor": 15.16,
+    "queuePressureScore": 1,
+    "deadEndRisk": 0.28,
     "solutionDepth": 76,
     "expandedNodes": 77,
-    "queuePeak": 3,
+    "queuePeak": 4,
     "recommendedHint": {
       "tileIds": [
-        "l5-p7-0",
-        "l5-p7-1"
+        "l5-p0-0",
+        "l5-p0-1"
       ],
       "reason": "优先拿下这一对，能用最低队列压力打开牌路。"
     }
   },
   "solutionPreview": [
-    "l5-p10-0",
-    "l5-p10-1",
-    "l5-p11-0",
-    "l5-p11-1",
-    "l5-p7-0",
-    "l5-p7-1",
-    "l5-p12-0",
-    "l5-p12-1",
-    "l5-p26-0",
-    "l5-p26-1",
-    "l5-p28-0",
-    "l5-p28-1",
-    "l5-p36-0",
-    "l5-p36-1",
-    "l5-p33-0",
-    "l5-p33-1",
-    "l5-p15-0",
-    "l5-p15-1",
-    "l5-p14-0",
-    "l5-p14-1",
-    "l5-p13-0",
-    "l5-p13-1",
-    "l5-p17-0",
-    "l5-p17-1",
-    "l5-p5-0",
-    "l5-p5-1",
+    "l5-p0-0",
+    "l5-p1-0",
+    "l5-p2-0",
     "l5-p3-0",
-    "l5-p3-1",
-    "l5-p32-0",
-    "l5-p32-1",
-    "l5-p37-0",
-    "l5-p37-1",
+    "l5-p1-1",
+    "l5-p4-0",
+    "l5-p0-1",
+    "l5-p5-0",
+    "l5-p4-1",
     "l5-p6-0",
+    "l5-p5-1",
+    "l5-p7-0",
     "l5-p6-1",
-    "l5-p24-0",
-    "l5-p24-1",
-    "l5-p23-0",
-    "l5-p23-1",
+    "l5-p8-0",
+    "l5-p3-1",
+    "l5-p9-0",
+    "l5-p2-1",
+    "l5-p10-0",
+    "l5-p9-1",
+    "l5-p11-0",
+    "l5-p10-1",
+    "l5-p12-0",
+    "l5-p7-1",
+    "l5-p13-0",
+    "l5-p8-1",
+    "l5-p14-0",
+    "l5-p11-1",
+    "l5-p15-0",
+    "l5-p12-1",
+    "l5-p16-0",
+    "l5-p14-1",
+    "l5-p17-0",
+    "l5-p13-1",
     "l5-p18-0",
+    "l5-p16-1",
+    "l5-p19-0",
+    "l5-p15-1",
+    "l5-p20-0",
+    "l5-p17-1",
+    "l5-p21-0",
     "l5-p18-1",
+    "l5-p22-0",
+    "l5-p19-1",
+    "l5-p23-0",
+    "l5-p20-1",
+    "l5-p24-0",
+    "l5-p22-1",
+    "l5-p25-0",
+    "l5-p24-1",
+    "l5-p26-0",
+    "l5-p23-1",
+    "l5-p27-0",
+    "l5-p21-1",
+    "l5-p28-0",
+    "l5-p25-1",
+    "l5-p29-0",
+    "l5-p28-1",
+    "l5-p30-0",
+    "l5-p27-1",
+    "l5-p31-0",
+    "l5-p26-1",
+    "l5-p32-0",
+    "l5-p29-1",
+    "l5-p33-0",
+    "l5-p30-1",
+    "l5-p34-0",
+    "l5-p31-1",
     "l5-p35-0",
     "l5-p35-1",
-    "l5-p16-0",
-    "l5-p16-1",
-    "l5-p29-0",
-    "l5-p29-1",
-    "l5-p22-0",
-    "l5-p22-1",
-    "l5-p4-0",
-    "l5-p4-1",
-    "l5-p25-0",
-    "l5-p25-1",
-    "l5-p20-0",
-    "l5-p20-1",
-    "l5-p27-0",
-    "l5-p27-1",
-    "l5-p8-0",
-    "l5-p8-1",
-    "l5-p1-0",
-    "l5-p1-1",
-    "l5-p31-0",
-    "l5-p31-1",
-    "l5-p19-0",
-    "l5-p19-1",
-    "l5-p34-0",
+    "l5-p36-0",
     "l5-p34-1",
-    "l5-p30-0",
-    "l5-p30-1",
-    "l5-p21-0",
-    "l5-p21-1",
-    "l5-p9-0",
-    "l5-p9-1",
-    "l5-p2-0",
-    "l5-p2-1",
-    "l5-p0-0",
-    "l5-p0-1"
+    "l5-p33-1",
+    "l5-p36-1",
+    "l5-p32-1",
+    "l5-p37-0",
+    "l5-p37-1"
   ]
 }

@@ -1,12 +1,14 @@
 import type { CandidateLevel, GeneratedLevelAnalysis, HintPayload } from './types.js';
 import { buildSolverContext, createInitialState, listFreeTileIds, listLegalMoves, solveLevel } from './solver.js';
 
+const ANALYSIS_SOLVER_NODE_BUDGET = 60_000;
+
 export function analyzeLevel(level: CandidateLevel): GeneratedLevelAnalysis {
   const context = buildSolverContext(level);
   const initialState = createInitialState(level);
   const openingFreeTiles = listFreeTileIds(context, initialState);
   const openingMatches = countOpeningMatches(level, openingFreeTiles);
-  const solved = solveLevel(level);
+  const solved = solveLevel(level, { maxExpandedNodes: ANALYSIS_SOLVER_NODE_BUDGET });
   const branchSamples: number[] = [];
   let dangerSteps = 0;
   let state = initialState;

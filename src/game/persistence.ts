@@ -2,6 +2,7 @@ import { cloneGame, type GameState } from './board';
 import { createStepQueue } from './stepQueue';
 
 export const SAVE_KEY = 'vita-mahjong-save';
+export const SAVE_SCHEMA_VERSION = 2;
 const HISTORY_LIMIT = 5;
 
 export interface HistoryEntry {
@@ -14,6 +15,7 @@ export interface HistoryEntry {
 }
 
 export interface SavedState {
+  schemaVersion: typeof SAVE_SCHEMA_VERSION;
   currentLevel: number;
   game: GameState;
   hintCount: number;
@@ -21,12 +23,13 @@ export interface SavedState {
   history: HistoryEntry[];
 }
 
-export type SaveInput = Omit<SavedState, 'history'> & {
+export type SaveInput = Omit<SavedState, 'history' | 'schemaVersion'> & {
   history?: HistoryEntry[];
 };
 
 export function createEmptyHistory(): SavedState {
   return {
+    schemaVersion: SAVE_SCHEMA_VERSION,
     currentLevel: 1,
     game: {
       tiles: [],
@@ -73,6 +76,7 @@ export function loadSavedState(storage: Storage): SavedState | null {
 export function saveCurrentState(storage: Storage, input: SaveInput): SavedState {
   const previous = loadSavedState(storage);
   const saved: SavedState = {
+    schemaVersion: SAVE_SCHEMA_VERSION,
     currentLevel: input.currentLevel,
     game: cloneGame(input.game),
     hintCount: input.hintCount,
@@ -84,8 +88,15 @@ export function saveCurrentState(storage: Storage, input: SaveInput): SavedState
   return saved;
 }
 
-export function recordHistoryEntry(storage: Storage, saved: SavedState, entry: HistoryEntry): SavedState {
-  const latest = loadSavedState(storage) ?? saved;
+export function recordHistoryEntry(storage: Storage, saved: SaveInput, entry: HistoryEntry): SavedState {
+  const latest = loadSavedState(storage) ?? {
+    schemaVersion: SAVE_SCHEMA_VERSION,
+    currentLevel: saved.currentLevel,
+    game: cloneGame(saved.game),
+    hintCount: saved.hintCount,
+    savedAt: saved.savedAt,
+    history: saved.history ?? [],
+  };
   const next: SavedState = {
     ...latest,
     history: [entry, ...latest.history.filter((candidate) => candidate.id !== entry.id)].slice(0, HISTORY_LIMIT),
@@ -103,6 +114,7 @@ export function clearSavedState(storage: Storage) {
 function isSavedState(value: SavedState) {
   return Boolean(
     value &&
+      value.schemaVersion === SAVE_SCHEMA_VERSION &&
       typeof value.currentLevel === 'number' &&
       value.game &&
       Array.isArray(value.game.tiles) &&

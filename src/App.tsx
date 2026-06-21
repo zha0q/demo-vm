@@ -4,7 +4,6 @@ import {
   cloneGame,
   createGame,
   findAvailableMoves,
-  hasMoves,
   isTileFree,
   isWon,
   removePair,
@@ -330,6 +329,10 @@ function GameApp({ initialState }: { initialState: AppState }) {
           };
         }
 
+        if (!canContinueWithStepQueue(game)) {
+          return failStateForNoStepQueueMoves(current, game, elapsed);
+        }
+
         game.message = '已放入托牌槽，继续寻找可配对牌。';
         return { ...current, game };
       }
@@ -354,8 +357,8 @@ function GameApp({ initialState }: { initialState: AppState }) {
         return completeStateIfWon({ ...current, game }, elapsed, wonRef);
       }
 
-      if (!hasMoves(game)) {
-        game.message = '暂无可消对子，继续观察或重开本关。';
+      if (!canContinueWithStepQueue(game)) {
+        return failStateForNoStepQueueMoves(current, game, elapsed);
       }
 
       return { ...current, game };
@@ -852,6 +855,41 @@ function completeStateIfWon(current: AppState, elapsedSeconds: number, wonRef: R
 
   wonRef.current = true;
   return completeGame(current, elapsedSeconds).nextState;
+}
+
+function failStateForNoStepQueueMoves(current: AppState, game: GameState, elapsedSeconds: number): AppState {
+  const activeCount = game.tiles.filter((tile) => !tile.removed && tile.state !== 'queued').length;
+  const reason = activeCount === 0
+    ? '牌桌已清空，但托牌槽仍有未配对牌。'
+    : '暂无可继续操作的开放牌。';
+
+  game.message = reason;
+
+  return {
+    ...current,
+    page: 'failed',
+    game,
+    failed: {
+      level: current.currentLevel,
+      reason,
+      elapsedSeconds,
+      queuedFaces: game.stepQueue.tileIds.map((id) => game.tiles.find((candidate) => candidate.id === id)?.face ?? ''),
+    },
+  };
+}
+
+function canContinueWithStepQueue(game: GameState) {
+  if (isWon(game)) {
+    return true;
+  }
+
+  return game.tiles.some((tile) => {
+    if (tile.removed || tile.state === 'queued' || tile.state === 'matching' || tile.state === 'animating') {
+      return false;
+    }
+
+    return isTileFree(game.tiles, tile.id) && enqueueTile(game.stepQueue, tile, game.tiles).accepted;
+  });
 }
 
 function nextLevelId(currentLevel: number) {

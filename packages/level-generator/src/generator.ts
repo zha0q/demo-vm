@@ -15,60 +15,44 @@ interface Coordinate {
   z: number;
 }
 
-interface PairedCoordinate {
-  face: string;
-  coordinates: [Coordinate, Coordinate];
-  solutionPair: number;
-}
-
 export function createCandidateLevel(options: GenerateLevelOptions): CandidateLevel {
   const template = getTemplateById(options.id);
   const coordinates = solutionOrderedCoordinates(
     template.layoutRows.map((layoutRow) => buildRow(layoutRow.y, layoutRow.z, layoutRow.count, layoutRow.startX ?? 0)),
-  );
+  ).slice(0, Math.floor(template.layoutRows.reduce((sum, row) => sum + row.count, 0) / 2) * 2);
   const pairCount = Math.floor(coordinates.length / 2);
-  const faces = buildFaceBag(template, pairCount * 2, options.seed);
-  const pairs: PairedCoordinate[] = [];
-
-  for (let index = 0; index < pairCount; index += 1) {
-    pairs.push({
-      face: faces[index * 2],
-      coordinates: [coordinates[index * 2], coordinates[index * 2 + 1]],
-      solutionPair: index + 1,
-    });
-  }
-
-  const shuffledPairs = shuffle(pairs, `${options.seed}:pair-order`);
+  const schedule = buildPairSchedule(pairCount, 4, `${options.seed}:schedule:${template.id}`);
+  const faces = assignPairFaces(template, schedule, options.seed);
+  const pairOccurrences = new Map<number, Coordinate[]>();
   const tiles: GeneratedLevelTile[] = [];
+  const solutionPreview: string[] = [];
 
-  shuffledPairs.forEach((pair, pairIndex) => {
-    pair.coordinates.forEach((coordinate, sideIndex) => {
-      tiles.push({
-        id: `l${template.id}-p${pairIndex}-${sideIndex}`,
-        face: pair.face,
-        x: coordinate.x,
-        y: coordinate.y,
-        z: coordinate.z,
-        solutionPair: pair.solutionPair,
-      });
+  schedule.forEach((pairIndex, eventIndex) => {
+    const occurrenceIndex = pairOccurrences.get(pairIndex)?.length ?? 0;
+    const coordinate = coordinates[eventIndex];
+    const tileId = `l${template.id}-p${pairIndex}-${occurrenceIndex}`;
+
+    if (!coordinate) {
+      return;
+    }
+
+    pairOccurrences.set(pairIndex, [...(pairOccurrences.get(pairIndex) ?? []), coordinate]);
+    tiles.push({
+      id: tileId,
+      face: faces[pairIndex] ?? ORDINARY_FACES[pairIndex % ORDINARY_FACES.length],
+      x: coordinate.x,
+      y: coordinate.y,
+      z: coordinate.z,
+      solutionPair: pairIndex + 1,
     });
+    solutionPreview.push(tileId);
   });
-
-  const solutionPreview = [...tiles]
-    .sort((left, right) => {
-      if (left.solutionPair !== right.solutionPair) {
-        return left.solutionPair - right.solutionPair;
-      }
-
-      return left.id.localeCompare(right.id);
-    })
-    .map((tile) => tile.id);
 
   return {
     template,
     seed: options.seed,
     queue: { capacity: 4 },
-    tiles,
+    tiles: shuffle(tiles, `${options.seed}:tile-output:${template.id}`),
     solutionPreview,
   };
 }
@@ -92,24 +76,105 @@ export function generateLevelAsset(candidate: CandidateLevel): GeneratedLevelAss
   };
 }
 
-function buildFaceBag(template: LevelTemplate, count: number, seed: string) {
-  const bag: string[] = [];
+function buildPairSchedule(pairCount: number, queueCapacity: number, seed: string) {
+  const random = seededRandom(seed);
+  const openedAt = new Map<number, number>();
+  const openPairs: number[] = [];
+  const schedule: number[] = [];
+  const targetPressure = Math.max(2, Math.min(queueCapacity, 3 + Math.floor(random() * 2)));
+  let nextPair = 0;
+  let closedPairs = 0;
+
+  while (closedPairs < pairCount) {
+    const canOpen = nextPair < pairCount && openPairs.length < queueCapacity;
+    const mustOpen = openPairs.length === 0;
+    const shouldBuildPressure = canOpen && openPairs.length < targetPressure && pairCount - nextPair > 1;
+    const shouldOpen = mustOpen || shouldBuildPressure || (canOpen && random() < 0.42 && pairCount - nextPair > openPairs.length);
+
+    if (shouldOpen) {
+      openedAt.set(nextPair, schedule.length);
+      openPairs.push(nextPair);
+      schedule.push(nextPair);
+      nextPair += 1;
+      continue;
+    }
+
+    const closeIndex = pickCloseIndex(openPairs, openedAt, schedule.length, random);
+    const [pairIndex] = openPairs.splice(closeIndex, 1);
+    schedule.push(pairIndex);
+    closedPairs += 1;
+  }
+
+  return schedule;
+}
+
+function pickCloseIndex(openPairs: number[], openedAt: Map<number, number>, currentIndex: number, random: () => number) {
+  const weighted = openPairs.map((pairIndex, index) => {
+    const age = currentIndex - (openedAt.get(pairIndex) ?? currentIndex);
+    return { index, weight: Math.max(1, age) ** 1.4 };
+  });
+  const totalWeight = weighted.reduce((sum, item) => sum + item.weight, 0);
+  let cursor = random() * totalWeight;
+
+  for (const item of weighted) {
+    cursor -= item.weight;
+
+    if (cursor <= 0) {
+      return item.index;
+    }
+  }
+
+  return weighted.at(-1)?.index ?? 0;
+}
+
+function assignPairFaces(template: LevelTemplate, schedule: number[], seed: string) {
+  const faces = new Array<string>(Math.max(...schedule) + 1);
+  const activeGroups = new Set<string>();
   const ordinaryPool = shuffle(ORDINARY_FACES, `${seed}:ordinary-pool:${template.id}`).slice(0, template.faceVariety);
+  const facePool = template.includeSpecialFaces
+    ? [...ordinaryPool, 'F1', 'F2', 'F3', 'F4', 'S1', 'S2', 'S3', 'S4']
+    : ordinaryPool;
+  let cursor = 0;
 
-  if (template.includeSpecialFaces && count >= 8) {
-    bag.push('F1', 'F2', 'F3', 'F4', 'S1', 'S2', 'S3', 'S4');
+  for (const pairIndex of schedule) {
+    const existingFace = faces[pairIndex];
+
+    if (existingFace) {
+      activeGroups.delete(faceGroup(existingFace));
+      continue;
+    }
+
+    const face = pickInactiveFace(facePool, activeGroups, cursor);
+    faces[pairIndex] = face;
+    activeGroups.add(faceGroup(face));
+    cursor += 1;
   }
 
-  for (let index = 0; bag.length + 1 < count; index += 1) {
-    const face = ordinaryPool[index % ordinaryPool.length] ?? ORDINARY_FACES[0];
-    bag.push(face, face);
+  return faces;
+}
+
+function pickInactiveFace(facePool: string[], activeGroups: Set<string>, startIndex: number) {
+  for (let offset = 0; offset < facePool.length; offset += 1) {
+    const face = facePool[(startIndex + offset) % facePool.length];
+
+    if (!activeGroups.has(faceGroup(face))) {
+      return face;
+    }
   }
 
-  if (bag.length < count) {
-    bag.push(bag[0] ?? ORDINARY_FACES[0]);
+  return facePool[startIndex % facePool.length] ?? ORDINARY_FACES[0];
+}
+
+function faceGroup(face: string) {
+  if (face.startsWith('F')) {
+    return 'flower';
   }
 
-  return shuffle(bag.slice(0, count), `${seed}:faces:${template.id}`);
+  if (face.startsWith('S')) {
+    return 'season';
+  }
+
+  return face;
 }
 
 function solutionOrderedCoordinates(rows: Coordinate[][]) {
