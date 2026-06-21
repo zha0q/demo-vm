@@ -3,6 +3,10 @@ export interface CameraBounds {
   boardHeight: number;
 }
 
+const DEFAULT_ROTATION_X = -62;
+const DEFAULT_ROTATION_Y = 0;
+const DEFAULT_ROTATION_Z = 0;
+
 export interface CameraControlState {
   target: {
     x: number;
@@ -22,7 +26,7 @@ export interface CameraControlState {
 export function createTopDownCameraState(bounds: CameraBounds): CameraControlState {
   return {
     target: { x: 0, y: 0, z: 0 },
-    rotation: { x: -90, y: 0, z: 0 },
+    rotation: { x: DEFAULT_ROTATION_X, y: DEFAULT_ROTATION_Y, z: DEFAULT_ROTATION_Z },
     height: Math.max(bounds.boardWidth, bounds.boardHeight) + 8,
     zoom: 1,
     bounds,
@@ -58,7 +62,7 @@ export function clampCameraControls(state: CameraControlState): CameraControlSta
       x: clamp(state.target.x, -state.bounds.boardWidth / 2, state.bounds.boardWidth / 2),
       z: clamp(state.target.z, -state.bounds.boardHeight / 2, state.bounds.boardHeight / 2),
     },
-    rotation: { ...state.rotation, x: -90, y: 0, z: 0 },
+    rotation: { ...state.rotation, x: DEFAULT_ROTATION_X, y: DEFAULT_ROTATION_Y, z: DEFAULT_ROTATION_Z },
     zoom: clamp(state.zoom, 0.55, 2.5),
   };
 }

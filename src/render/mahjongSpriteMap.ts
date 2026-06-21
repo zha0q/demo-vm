@@ -36,6 +36,13 @@ export interface MahjongSpriteFrame {
   height: number;
 }
 
+interface FrameInset {
+  left?: number;
+  right?: number;
+  top?: number;
+  bottom?: number;
+}
+
 function frame(row: number, column: number): MahjongSpriteFrame {
   const [left, right] = COLUMN_BOUNDS[column - 1];
   const [top, bottom] = ROW_BOUNDS[row - 1];
@@ -107,8 +114,22 @@ export function getMahjongFaceFrame(face: string) {
   return FACE_FRAME_MAP[face] ?? DEFAULT_FRAME;
 }
 
-export function getMahjongFaceSpriteStyle(face: string, width: number, height: number) {
-  const target = getMahjongFaceFrame(face);
+function insetFrame(frameRect: MahjongSpriteFrame, inset: FrameInset = {}) {
+  const left = inset.left ?? 0;
+  const right = inset.right ?? 0;
+  const top = inset.top ?? 0;
+  const bottom = inset.bottom ?? 0;
+
+  return {
+    x: frameRect.x + left,
+    y: frameRect.y + top,
+    width: Math.max(1, frameRect.width - left - right),
+    height: Math.max(1, frameRect.height - top - bottom),
+  };
+}
+
+export function getMahjongFaceSpriteStyle(face: string, width: number, height: number, inset?: FrameInset) {
+  const target = insetFrame(getMahjongFaceFrame(face), inset);
   const scale = Math.min(width / target.width, height / target.height);
   const scaledSheetSize = SPRITE_SHEET_SIZE * scale;
   const offsetX = (width - target.width * scale) / 2 - target.x * scale;
@@ -120,4 +141,13 @@ export function getMahjongFaceSpriteStyle(face: string, width: number, height: n
     backgroundSize: `${scaledSheetSize}px ${scaledSheetSize}px`,
     backgroundPosition: `${offsetX}px ${offsetY}px`,
   };
+}
+
+export function getMahjongFaceQueueSpriteStyle(face: string, width: number, height: number) {
+  return getMahjongFaceSpriteStyle(face, width, height, {
+    left: 12,
+    right: 10,
+    top: 10,
+    bottom: 12,
+  });
 }

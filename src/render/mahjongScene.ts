@@ -12,11 +12,14 @@ import {
 
 const TILE_WIDTH = 1.18;
 const TILE_HEIGHT = 1.5;
-const TILE_DEPTH = 0.28;
-const TILE_STEP_X = 1.02;
-const TILE_STEP_Z = 1.18;
-const LAYER_RISE = 0.24;
-const LAYER_VISUAL_OFFSET = 0.22;
+const TILE_DEPTH = 0.34;
+const TILE_STEP_X = 1.1;
+const TILE_STEP_Z = 1.26;
+const LAYER_RISE = 0.46;
+const LAYER_OFFSET_X = -0.42;
+const LAYER_OFFSET_Z = -0.32;
+const CAMERA_SIDE_OFFSET = 0;
+const CAMERA_DISTANCE = 24;
 const SPRITE_IMAGE = new Image();
 const PENDING_FACE_TEXTURES = new Set<THREE.CanvasTexture>();
 
@@ -49,6 +52,8 @@ export class MahjongScene {
   private game: GameState | null = null;
   private hoveredId: string | null = null;
   private controls = createTopDownCameraState({ boardWidth: 12, boardHeight: 9 });
+  private boardSignature = '';
+  private layoutSignature = '';
   private animationFrame = 0;
   private dragging = false;
   private lastPointer = { x: 0, y: 0 };
@@ -141,7 +146,7 @@ export class MahjongScene {
     this.scene.add(new THREE.HemisphereLight('#fff7dd', '#103328', 1.18));
 
     const key = new THREE.DirectionalLight('#fff1be', 2.6);
-    key.position.set(-5, 12, 7);
+    key.position.set(-4.5, 13.5, 5.4);
     key.castShadow = true;
     key.shadow.mapSize.set(2048, 2048);
     key.shadow.camera.left = -12;
@@ -150,8 +155,8 @@ export class MahjongScene {
     key.shadow.camera.bottom = -12;
     this.scene.add(key);
 
-    const rim = new THREE.DirectionalLight('#80ffd1', 0.95);
-    rim.position.set(7, 8, -6);
+    const rim = new THREE.DirectionalLight('#80ffd1', 0.78);
+    rim.position.set(5.5, 8.5, -4.8);
     this.scene.add(rim);
   }
 
@@ -252,10 +257,15 @@ export class MahjongScene {
     }
 
     this.renderer.setSize(width, height, false);
+    if (this.game) {
+      this.frameBoard(this.game.tiles, true);
+      return;
+    }
+
     this.applyCamera();
   };
 
-  private frameBoard(tiles: Tile[]) {
+  private frameBoard(tiles: Tile[], force = false) {
     const active = tiles.filter((tile) => !tile.removed);
 
     if (active.length === 0) {
@@ -264,21 +274,33 @@ export class MahjongScene {
       return;
     }
 
-    const minX = Math.min(...active.map((tile) => tile.x));
-    const maxX = Math.max(...active.map((tile) => tile.x));
-    const minY = Math.min(...active.map((tile) => tile.y));
-    const maxY = Math.max(...active.map((tile) => tile.y));
-    const centerX = ((minX + maxX) * TILE_STEP_X) / 2;
-    const centerZ = ((minY + maxY) * TILE_STEP_Z) / 2;
-    const boardWidth = Math.max((maxX - minX + 1) * TILE_STEP_X + 1.7, 6);
-    const boardHeight = Math.max((maxY - minY + 1) * TILE_STEP_Z + 1.9, 6);
+    const bounds = measureTileWorldBounds(active);
+    const layoutSignature = tiles.map((tile) => tile.id).sort().join('|');
+    const signature = [
+      bounds.minX.toFixed(2),
+      bounds.maxX.toFixed(2),
+      bounds.minZ.toFixed(2),
+      bounds.maxZ.toFixed(2),
+      active.length,
+    ].join(':');
+    const centerX = (bounds.minX + bounds.maxX) / 2;
+    const centerZ = (bounds.minZ + bounds.maxZ) / 2;
+    const boardWidth = Math.max(bounds.maxX - bounds.minX + 1.2, 6);
+    const boardHeight = Math.max(bounds.maxZ - bounds.minZ + 1.2, 6);
 
     this.boardGroup.position.set(-centerX, 0, -centerZ);
+    if (!force && signature === this.boardSignature) {
+      return;
+    }
+
+    const isNewBoard = layoutSignature !== this.layoutSignature;
+    this.boardSignature = signature;
+    this.layoutSignature = layoutSignature;
     this.controls = clampCameraControls({
       ...this.controls,
       bounds: { boardWidth, boardHeight },
-      height: Math.max(boardWidth, boardHeight) * 1.26 + 1.8,
-      zoom: Math.max(this.controls.zoom, 1.08),
+      height: Math.max(boardWidth, boardHeight) * 1.18 + 2.4,
+      zoom: isNewBoard ? 0.9 : this.controls.zoom,
     });
     this.applyCamera();
   }
@@ -289,12 +311,18 @@ export class MahjongScene {
     const aspect = width / height;
     const viewHeight = this.controls.height / this.controls.zoom;
     const viewWidth = viewHeight * aspect;
+    const pitch = THREE.MathUtils.degToRad(Math.abs(this.controls.rotation.x));
+    const yaw = THREE.MathUtils.degToRad(this.controls.rotation.y);
+    const horizontalDistance = Math.cos(pitch) * CAMERA_DISTANCE;
+    const cameraHeight = Math.sin(pitch) * CAMERA_DISTANCE;
+    const cameraX = this.controls.target.x + Math.sin(yaw) * horizontalDistance + CAMERA_SIDE_OFFSET;
+    const cameraZ = this.controls.target.z + Math.cos(yaw) * horizontalDistance;
 
     this.camera.left = -viewWidth / 2;
     this.camera.right = viewWidth / 2;
     this.camera.top = viewHeight / 2;
     this.camera.bottom = -viewHeight / 2;
-    this.camera.position.set(this.controls.target.x, 22, this.controls.target.z + 2.4);
+    this.camera.position.set(cameraX, cameraHeight, cameraZ);
     this.camera.up.set(0, 0, -1);
     this.camera.lookAt(this.controls.target.x, 0, this.controls.target.z);
     this.camera.updateProjectionMatrix();
@@ -343,7 +371,7 @@ function updateTileMaterial(mesh: THREE.Mesh, state: {
 }) {
   const materials = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
   const top = materials[2];
-  const sideColor = state.free ? '#0e8c3a' : '#33603c';
+  const sideColor = state.free ? '#0f8a38' : '#244f31';
   const topTint = state.selected ? '#86ead9' : state.hovered && state.free ? '#fff2a8' : '#f8f1d8';
 
   materials.forEach((material, index) => {
@@ -364,7 +392,7 @@ function updateTileMaterial(mesh: THREE.Mesh, state: {
 }
 
 function sideMaterial(color: string) {
-  return new THREE.MeshStandardMaterial({ color, roughness: 0.56, metalness: 0.04 });
+  return new THREE.MeshStandardMaterial({ color, roughness: 0.72, metalness: 0.04 });
 }
 
 function faceMaterial(face: string) {
@@ -398,10 +426,29 @@ function createFaceTexture(face: string) {
 }
 
 function tileToWorld(tile: Tile) {
-  const x = tile.x * TILE_STEP_X + tile.z * LAYER_VISUAL_OFFSET;
+  const x = tile.x * TILE_STEP_X + tile.z * LAYER_OFFSET_X;
   const y = tile.z * LAYER_RISE + TILE_DEPTH / 2;
-  const z = tile.y * TILE_STEP_Z - tile.z * LAYER_VISUAL_OFFSET;
+  const z = tile.y * TILE_STEP_Z + tile.z * LAYER_OFFSET_Z;
   return new THREE.Vector3(x, y, z);
+}
+
+function measureTileWorldBounds(tiles: Tile[]) {
+  const bounds = {
+    minX: Number.POSITIVE_INFINITY,
+    maxX: Number.NEGATIVE_INFINITY,
+    minZ: Number.POSITIVE_INFINITY,
+    maxZ: Number.NEGATIVE_INFINITY,
+  };
+
+  for (const tile of tiles) {
+    const position = tileToWorld(tile);
+    bounds.minX = Math.min(bounds.minX, position.x - TILE_WIDTH / 2);
+    bounds.maxX = Math.max(bounds.maxX, position.x + TILE_WIDTH / 2);
+    bounds.minZ = Math.min(bounds.minZ, position.z - TILE_HEIGHT / 2);
+    bounds.maxZ = Math.max(bounds.maxZ, position.z + TILE_HEIGHT / 2);
+  }
+
+  return bounds;
 }
 
 function createTileShadow() {
@@ -409,12 +456,12 @@ function createTileShadow() {
   const material = new THREE.MeshBasicMaterial({
     map: texture,
     transparent: true,
-    opacity: 0.5,
+    opacity: 0.8,
     depthWrite: false,
   });
-  const shadow = new THREE.Mesh(new THREE.PlaneGeometry(TILE_WIDTH * 1.2, TILE_HEIGHT * 1.16), material);
+  const shadow = new THREE.Mesh(new THREE.PlaneGeometry(TILE_WIDTH * 1.28, TILE_HEIGHT * 1.22), material);
   shadow.rotation.x = -Math.PI / 2;
-  shadow.position.set(0.055, -TILE_DEPTH / 2 - 0.012, 0.075);
+  shadow.position.set(0.075, -TILE_DEPTH / 2 - 0.02, 0.11);
   shadow.renderOrder = -1;
 
   return shadow;

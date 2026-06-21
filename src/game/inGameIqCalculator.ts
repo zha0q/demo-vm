@@ -10,6 +10,8 @@ export interface InGameIqInput {
   totalPairs: number;
   currentCombo: number;
   elapsedSeconds: number;
+  difficultyScore?: number;
+  iqWeight?: number;
 }
 
 export interface InGameIqResult {
@@ -36,7 +38,9 @@ export function calculateInGameIq(input: InGameIqInput): InGameIqResult {
   const quality = 0.45 * progressScore + 0.30 * timeScore + 0.25 * comboScore;
   const raw = clamp(IQ_MIN + 0.70 * quality, IQ_MIN, IQ_MAX);
   const confidence = clamp(progress / IQ_CONFIDENCE_PROGRESS_THRESHOLD, 0, 1);
-  const iq = Math.round(100 * (1 - confidence) + raw * confidence);
+  const difficultyWeight = input.iqWeight ?? weightFromDifficulty(input.difficultyScore);
+  const weightedRaw = clamp(100 + (raw - 100) * difficultyWeight, IQ_MIN, IQ_MAX);
+  const iq = Math.round(weightedRaw * confidence);
 
   return {
     iq,
@@ -70,4 +74,12 @@ export function labelForIq(iq: number) {
 
 function clamp(value: number, min: number, max: number) {
   return Math.min(max, Math.max(min, value));
+}
+
+function weightFromDifficulty(difficultyScore?: number) {
+  if (typeof difficultyScore !== 'number' || Number.isNaN(difficultyScore)) {
+    return 1;
+  }
+
+  return clamp(0.96 + clamp(difficultyScore, 1, 10) * 0.03, 0.98, 1.2);
 }

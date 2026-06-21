@@ -12,10 +12,14 @@ import {
   undoLastMove,
   type GameState,
 } from './game/board';
-import { getLevelConfig } from './game/config';
 import successTitleImage from './assets/success_title.PNG';
+import { createLevelTiles, getLevel, levelCatalog } from './core/levelLoader';
+import {
+  preloadStaticResources,
+  resetStaticResourcePreload,
+  type PreloadProgress,
+} from './core/preloadAssets';
 import { calculateInGameIq } from './game/inGameIqCalculator';
-import { createLevelTiles, levelCatalog } from './game/levels';
 import {
   clearSavedState,
   loadSavedState,
@@ -25,10 +29,11 @@ import {
 } from './game/persistence';
 import { STEP_QUEUE_MAX_SIZE } from './game/constants';
 import { enqueueTile } from './game/stepQueue';
-import { getMahjongFaceSpriteStyle } from './render/mahjongSpriteMap';
+import { getMahjongFaceQueueSpriteStyle } from './render/mahjongSpriteMap';
 import { MahjongScene } from './render/mahjongScene';
 
 type Page = 'home' | 'game' | 'complete' | 'failed';
+type BootStatus = 'loading' | 'ready' | 'failed';
 
 interface AppState {
   page: Page;
@@ -59,13 +64,15 @@ interface FailureSummary {
 }
 
 function createFreshState(levelId = 1, page: Page = 'home'): AppState {
+  const level = getLevel(levelId);
+
   return {
     page,
-    currentLevel: levelId,
+    currentLevel: level.id,
     game: createGame({
-      tiles: createLevelTiles(levelId, `level-${levelId}-${Date.now()}`),
-      level: levelId,
-      seed: `level-${levelId}`,
+      tiles: createLevelTiles(level.id),
+      level: level.id,
+      seed: level.seed,
     }),
     hintCount: 0,
     undoCount: 0,
@@ -91,13 +98,77 @@ function loadInitialState(): AppState {
 }
 
 export function App() {
+  const [bootStatus, setBootStatus] = useState<BootStatus>('loading');
+  const [bootProgress, setBootProgress] = useState<PreloadProgress>({ loaded: 0, total: 5, label: '准备资源' });
+  const [bootError, setBootError] = useState<string | null>(null);
+  const [initialState, setInitialState] = useState<AppState | null>(null);
+
+  useEffect(() => {
+    let active = true;
+
+    preloadStaticResources((progress) => {
+      if (active) {
+        setBootProgress(progress);
+      }
+    })
+      .then(() => {
+        if (!active) {
+          return;
+        }
+
+        setInitialState(loadInitialState());
+        setBootStatus('ready');
+      })
+      .catch((error: unknown) => {
+        if (!active) {
+          return;
+        }
+
+        setBootError(error instanceof Error ? error.message : '资源加载失败');
+        setBootStatus('failed');
+      });
+
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  if (bootStatus !== 'ready' || !initialState) {
+    return (
+      <LoadingPage
+        error={bootError}
+        progress={bootProgress}
+        onRetry={() => {
+          resetStaticResourcePreload();
+          setBootError(null);
+          setBootProgress({ loaded: 0, total: 5, label: '重新加载资源' });
+          setBootStatus('loading');
+          preloadStaticResources(setBootProgress)
+            .then(() => {
+              setInitialState(loadInitialState());
+              setBootStatus('ready');
+            })
+            .catch((error: unknown) => {
+              setBootError(error instanceof Error ? error.message : '资源加载失败');
+              setBootStatus('failed');
+            });
+        }}
+      />
+    );
+  }
+
+  return <GameApp initialState={initialState} />;
+}
+
+function GameApp({ initialState }: { initialState: AppState }) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const sceneRef = useRef<MahjongScene | null>(null);
-  const [state, setState] = useState<AppState>(() => loadInitialState());
+  const [state, setState] = useState<AppState>(() => initialState);
   const [elapsed, setElapsed] = useState(0);
   const [moreOpen, setMoreOpen] = useState(false);
   const wonRef = useRef(false);
 
+  const level = getLevel(state.currentLevel);
   const moves = findAvailableMoves(state.game.tiles);
   const remaining = remainingTiles(state.game.tiles).length;
   const clearedPairs = Math.round((state.game.tiles.length - remaining) / 2);
@@ -109,15 +180,14 @@ export function App() {
         totalPairs,
         currentCombo: state.game.combo,
         elapsedSeconds: elapsed,
+        difficultyScore: level.difficultyScore,
+        iqWeight: level.iqWeight,
       }),
-    [clearedPairs, elapsed, state.game.combo, totalPairs],
+    [clearedPairs, elapsed, level.difficultyScore, level.iqWeight, state.game.combo, totalPairs],
   );
-  const level = levelCatalog.find((candidate) => candidate.id === state.currentLevel) ?? levelCatalog[0];
-  const config = getLevelConfig(state.currentLevel);
-  const hintRemaining = Math.max(0, config.hintCount - state.hintCount);
-  const undoRemaining = Math.max(0, config.undoCount - state.undoCount);
-  const derivedFinal = state.page === 'game' && isWon(state.game) ? createCompletionSummary(state, elapsed) : undefined;
-
+  const hintRemaining = Math.max(0, level.hintCount - state.hintCount);
+  const undoRemaining = Math.max(0, level.undoCount - state.undoCount);
+  const sceneKey = `${state.currentLevel}:${state.game.seed}`;
   useEffect(() => {
     if (state.page !== 'game' || remaining !== 0 || wonRef.current) {
       return;
@@ -142,7 +212,7 @@ export function App() {
       scene.dispose();
       sceneRef.current = null;
     };
-  }, [state.page]);
+  }, [sceneKey, state.page]);
 
   useEffect(() => {
     sceneRef.current?.renderBoard(state.game);
@@ -359,10 +429,10 @@ export function App() {
     );
   }
 
-  if ((state.page === 'complete' && state.final) || derivedFinal) {
+  if (state.page === 'complete' && state.final) {
     return (
       <CompletePage
-        final={state.final ?? derivedFinal!}
+        final={state.final}
         levelName={level.name}
         onHome={goHome}
         onNext={() => startLevel(nextLevelId(state.currentLevel))}
@@ -424,6 +494,42 @@ export function App() {
   );
 }
 
+function LoadingPage({
+  error,
+  progress,
+  onRetry,
+}: {
+  error: string | null;
+  progress: PreloadProgress;
+  onRetry: () => void;
+}) {
+  const percent = Math.round((progress.loaded / Math.max(1, progress.total)) * 100);
+
+  return (
+    <main className="loading-screen" aria-busy={!error} aria-label="资源加载">
+      <section className="loading-panel">
+        <div className="loading-emblem">牌</div>
+        <p className="loading-kicker">Vita Mohjong</p>
+        <h1>{error ? '资源加载失败' : '正在布置牌局'}</h1>
+        <div className="loading-bar" aria-label={`加载进度 ${percent}%`}>
+          <span style={{ width: `${percent}%` }} />
+        </div>
+        <p className="loading-status">
+          {error ? '请检查网络后重试。' : `${progress.label} · ${percent}%`}
+        </p>
+        {error ? (
+          <>
+            <small className="loading-error">{error}</small>
+            <button className="loading-retry" onClick={onRetry}>
+              重新加载
+            </button>
+          </>
+        ) : null}
+      </section>
+    </main>
+  );
+}
+
 function HomePage({
   currentLevel,
   history,
@@ -451,8 +557,8 @@ function HomePage({
         </button>
       </div>
       <section className="home-title" aria-label="游戏标题">
-        <span>三维</span>
-        <strong>麻将清台</strong>
+        <span>Vita</span>
+        <strong>Mohjong</strong>
         <small>第 {currentLevel} 关 · 已通关 {wonCount}</small>
       </section>
       <button className="primary-start" onClick={onPlay}>
@@ -567,7 +673,7 @@ function StepQueueView({ faces }: { faces: string[] }) {
 function TileFace({ face }: { face: string }) {
   return (
     <span className="queue-tile">
-      <span className="queue-tile-sprite" style={getMahjongFaceSpriteStyle(face, 56, 74)} />
+      <span className="queue-tile-sprite" style={getMahjongFaceQueueSpriteStyle(face, 44, 62)} />
     </span>
   );
 }
@@ -718,11 +824,14 @@ function completeGame(current: AppState, elapsedSeconds: number) {
 }
 
 function createCompletionSummary(current: AppState, elapsedSeconds: number): CompletionSummary {
+  const level = getLevel(current.currentLevel);
   const finalIq = calculateInGameIq({
     clearedPairs: Math.floor(current.game.tiles.length / 2),
     totalPairs: Math.max(1, Math.floor(current.game.tiles.length / 2)),
     currentCombo: current.game.combo,
     elapsedSeconds,
+    difficultyScore: level.difficultyScore,
+    iqWeight: level.iqWeight,
   });
 
   return {

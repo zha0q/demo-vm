@@ -1,0 +1,166 @@
+{
+  "version": 1,
+  "generatedAt": "2026-06-21T02:21:33.454Z",
+  "levels": [
+    {
+      "id": 1,
+      "name": "庭前叠影",
+      "subtitle": "开局就有三层压顶，需要观察边缘释放顺序。",
+      "difficultyScore": 10,
+      "iqWeight": 1.2,
+      "path": "./level-001.json"
+    },
+    {
+      "id": 2,
+      "name": "曲桥叠影",
+      "subtitle": "参考 Bridge 的横向拱桥轮廓，边缘入口更多。",
+      "difficultyScore": 10,
+      "iqWeight": 1.2,
+      "path": "./level-002.json"
+    },
+    {
+      "id": 3,
+      "name": "龟背初叠",
+      "subtitle": "借鉴 Turtle 的稳定龟背，中心层压开始出现。",
+      "difficultyScore": 10,
+      "iqWeight": 1.2,
+      "path": "./level-003.json"
+    },
+    {
+      "id": 4,
+      "name": "沙漏回环",
+      "subtitle": "参考 Hourglass，中段收窄后再展开。",
+      "difficultyScore": 10,
+      "iqWeight": 1.2,
+      "path": "./level-004.json"
+    },
+    {
+      "id": 5,
+      "name": "黑洞外环",
+      "subtitle": "参考 Black Hole 的环形缺口，中心需要绕行打开。",
+      "difficultyScore": 9.93,
+      "iqWeight": 1.2,
+      "path": "./level-005.json"
+    },
+    {
+      "id": 6,
+      "name": "金字塔基",
+      "subtitle": "参考 Pyramid，层层收束但入口仍清晰。",
+      "difficultyScore": 10,
+      "iqWeight": 1.2,
+      "path": "./level-006.json"
+    },
+    {
+      "id": 7,
+      "name": "蝶翼双开",
+      "subtitle": "参考 Butterfly，左右翼分散，托牌槽要控节奏。",
+      "difficultyScore": 10,
+      "iqWeight": 1.2,
+      "path": "./level-007.json"
+    },
+    {
+      "id": 8,
+      "name": "竞技场",
+      "subtitle": "参考 Arena，外围宽阔，内圈压住关键路口。",
+      "difficultyScore": 10,
+      "iqWeight": 1.2,
+      "path": "./level-008.json"
+    },
+    {
+      "id": 9,
+      "name": "中心火种",
+      "subtitle": "参考 Center Point 与 Fire，中心高层决定展开顺序。",
+      "difficultyScore": 10,
+      "iqWeight": 1.2,
+      "path": "./level-009.json"
+    },
+    {
+      "id": 10,
+      "name": "断墙缺口",
+      "subtitle": "参考 Broken Wall，分段墙体让边缘优先级更重要。",
+      "difficultyScore": 10,
+      "iqWeight": 1.2,
+      "path": "./level-010.json"
+    },
+    {
+      "id": 11,
+      "name": "台阶斜影",
+      "subtitle": "参考 Steps，斜向递进让高层释放更慢。",
+      "difficultyScore": 10,
+      "iqWeight": 1.2,
+      "path": "./level-011.json"
+    },
+    {
+      "id": 12,
+      "name": "堡垒中庭",
+      "subtitle": "参考 Fortress，四角厚墙夹住中庭。",
+      "difficultyScore": 10,
+      "iqWeight": 1.2,
+      "path": "./level-012.json"
+    },
+    {
+      "id": 13,
+      "name": "神庙阶廊",
+      "subtitle": "参考 Temple，多层中轴压顶，分支选择增多。",
+      "difficultyScore": 10,
+      "iqWeight": 1.2,
+      "path": "./level-013.json"
+    },
+    {
+      "id": 14,
+      "name": "雪片六芒",
+      "subtitle": "参考 Flakes，放射状边缘多但中心压力高。",
+      "difficultyScore": 10,
+      "iqWeight": 1.2,
+      "path": "./level-014.json"
+    },
+    {
+      "id": 15,
+      "name": "菱心回廊",
+      "subtitle": "参考 Diamond，外松内紧，后半段更依赖记忆。",
+      "difficultyScore": 10,
+      "iqWeight": 1.2,
+      "path": "./level-015.json"
+    },
+    {
+      "id": 16,
+      "name": "白龙回字",
+      "subtitle": "参考 White Dragon，回字结构让开口判断更刁钻。",
+      "difficultyScore": 10,
+      "iqWeight": 1.2,
+      "path": "./level-016.json"
+    },
+    {
+      "id": 17,
+      "name": "绿龙折线",
+      "subtitle": "参考 Green Dragon，折线多段释放，托牌槽压力提高。",
+      "difficultyScore": 10,
+      "iqWeight": 1.2,
+      "path": "./level-017.json"
+    },
+    {
+      "id": 18,
+      "name": "红龙纵列",
+      "subtitle": "参考 Red Dragon，多层纵列锁定中线。",
+      "difficultyScore": 10,
+      "iqWeight": 1.2,
+      "path": "./level-018.json"
+    },
+    {
+      "id": 19,
+      "name": "龙首回旋",
+      "subtitle": "参考 Dragon，头尾分离，需要按高层线索拆解。",
+      "difficultyScore": 10,
+      "iqWeight": 1.2,
+      "path": "./level-019.json"
+    },
+    {
+      "id": 20,
+      "name": "终局重楼",
+      "subtitle": "融合 Turtle 与 Temple 的终局重楼，层压和槽位压力最高。",
+      "difficultyScore": 10,
+      "iqWeight": 1.2,
+      "path": "./level-020.json"
+    }
+  ]
+}

@@ -1,0 +1,1009 @@
+{
+  "version": 1,
+  "id": 16,
+  "name": "白龙回字",
+  "subtitle": "参考 White Dragon，回字结构让开口判断更刁钻。",
+  "seed": "generated-level-016",
+  "queue": {
+    "capacity": 4
+  },
+  "hintCount": 2,
+  "undoCount": 1,
+  "comboBreakSeconds": 5,
+  "tiles": [
+    {
+      "id": "l16-p0-0",
+      "face": "B5",
+      "x": 3,
+      "y": 3,
+      "z": 2,
+      "solutionPair": 9
+    },
+    {
+      "id": "l16-p0-1",
+      "face": "B5",
+      "x": 5,
+      "y": 3,
+      "z": 2,
+      "solutionPair": 9
+    },
+    {
+      "id": "l16-p1-0",
+      "face": "D8",
+      "x": 5,
+      "y": 3,
+      "z": 0,
+      "solutionPair": 50
+    },
+    {
+      "id": "l16-p1-1",
+      "face": "D8",
+      "x": 6,
+      "y": 3,
+      "z": 0,
+      "solutionPair": 50
+    },
+    {
+      "id": "l16-p2-0",
+      "face": "C2",
+      "x": 3,
+      "y": 1,
+      "z": 1,
+      "solutionPair": 19
+    },
+    {
+      "id": "l16-p2-1",
+      "face": "C2",
+      "x": 7,
+      "y": 1,
+      "z": 1,
+      "solutionPair": 19
+    },
+    {
+      "id": "l16-p3-0",
+      "face": "D1",
+      "x": 1,
+      "y": 1,
+      "z": 0,
+      "solutionPair": 35
+    },
+    {
+      "id": "l16-p3-1",
+      "face": "D1",
+      "x": 10,
+      "y": 2,
+      "z": 0,
+      "solutionPair": 35
+    },
+    {
+      "id": "l16-p4-0",
+      "face": "F3",
+      "x": 6,
+      "y": 2,
+      "z": 2,
+      "solutionPair": 7
+    },
+    {
+      "id": "l16-p4-1",
+      "face": "F3",
+      "x": 6,
+      "y": 3,
+      "z": 2,
+      "solutionPair": 7
+    },
+    {
+      "id": "l16-p5-0",
+      "face": "C9",
+      "x": 7,
+      "y": 1,
+      "z": 3,
+      "solutionPair": 1
+    },
+    {
+      "id": "l16-p5-1",
+      "face": "C9",
+      "x": 7,
+      "y": 2,
+      "z": 3,
+      "solutionPair": 1
+    },
+    {
+      "id": "l16-p6-0",
+      "face": "B4",
+      "x": 3,
+      "y": 0,
+      "z": 0,
+      "solutionPair": 41
+    },
+    {
+      "id": "l16-p6-1",
+      "face": "B4",
+      "x": 8,
+      "y": 0,
+      "z": 0,
+      "solutionPair": 41
+    },
+    {
+      "id": "l16-p7-0",
+      "face": "D8",
+      "x": 3,
+      "y": 4,
+      "z": 1,
+      "solutionPair": 22
+    },
+    {
+      "id": "l16-p7-1",
+      "face": "D8",
+      "x": 7,
+      "y": 4,
+      "z": 1,
+      "solutionPair": 22
+    },
+    {
+      "id": "l16-p8-0",
+      "face": "RED",
+      "x": 2,
+      "y": 2,
+      "z": 1,
+      "solutionPair": 16
+    },
+    {
+      "id": "l16-p8-1",
+      "face": "RED",
+      "x": 8,
+      "y": 2,
+      "z": 1,
+      "solutionPair": 16
+    },
+    {
+      "id": "l16-p9-0",
+      "face": "C4",
+      "x": 5,
+      "y": 8,
+      "z": 0,
+      "solutionPair": 53
+    },
+    {
+      "id": "l16-p9-1",
+      "face": "C4",
+      "x": 6,
+      "y": 8,
+      "z": 0,
+      "solutionPair": 53
+    },
+    {
+      "id": "l16-p10-0",
+      "face": "C6",
+      "x": 2,
+      "y": 3,
+      "z": 1,
+      "solutionPair": 17
+    },
+    {
+      "id": "l16-p10-1",
+      "face": "C6",
+      "x": 8,
+      "y": 3,
+      "z": 1,
+      "solutionPair": 17
+    },
+    {
+      "id": "l16-p11-0",
+      "face": "B3",
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "solutionPair": 29
+    },
+    {
+      "id": "l16-p11-1",
+      "face": "B3",
+      "x": 11,
+      "y": 0,
+      "z": 0,
+      "solutionPair": 29
+    },
+    {
+      "id": "l16-p12-0",
+      "face": "B9",
+      "x": 1,
+      "y": 4,
+      "z": 1,
+      "solutionPair": 14
+    },
+    {
+      "id": "l16-p12-1",
+      "face": "B9",
+      "x": 9,
+      "y": 4,
+      "z": 1,
+      "solutionPair": 14
+    },
+    {
+      "id": "l16-p13-0",
+      "face": "B6",
+      "x": 3,
+      "y": 7,
+      "z": 0,
+      "solutionPair": 43
+    },
+    {
+      "id": "l16-p13-1",
+      "face": "B6",
+      "x": 8,
+      "y": 8,
+      "z": 0,
+      "solutionPair": 43
+    },
+    {
+      "id": "l16-p14-0",
+      "face": "F1",
+      "x": 8,
+      "y": 2,
+      "z": 2,
+      "solutionPair": 5
+    },
+    {
+      "id": "l16-p14-1",
+      "face": "F1",
+      "x": 8,
+      "y": 3,
+      "z": 2,
+      "solutionPair": 5
+    },
+    {
+      "id": "l16-p15-0",
+      "face": "D3",
+      "x": 7,
+      "y": 2,
+      "z": 2,
+      "solutionPair": 6
+    },
+    {
+      "id": "l16-p15-1",
+      "face": "D3",
+      "x": 7,
+      "y": 3,
+      "z": 2,
+      "solutionPair": 6
+    },
+    {
+      "id": "l16-p16-0",
+      "face": "C3",
+      "x": 5,
+      "y": 0,
+      "z": 0,
+      "solutionPair": 49
+    },
+    {
+      "id": "l16-p16-1",
+      "face": "C3",
+      "x": 6,
+      "y": 0,
+      "z": 0,
+      "solutionPair": 49
+    },
+    {
+      "id": "l16-p17-0",
+      "face": "B8",
+      "x": 3,
+      "y": 2,
+      "z": 2,
+      "solutionPair": 8
+    },
+    {
+      "id": "l16-p17-1",
+      "face": "B8",
+      "x": 5,
+      "y": 2,
+      "z": 2,
+      "solutionPair": 8
+    },
+    {
+      "id": "l16-p18-0",
+      "face": "RED",
+      "x": 5,
+      "y": 1,
+      "z": 1,
+      "solutionPair": 27
+    },
+    {
+      "id": "l16-p18-1",
+      "face": "RED",
+      "x": 5,
+      "y": 2,
+      "z": 1,
+      "solutionPair": 27
+    },
+    {
+      "id": "l16-p19-0",
+      "face": "S",
+      "x": 4,
+      "y": 1,
+      "z": 1,
+      "solutionPair": 23
+    },
+    {
+      "id": "l16-p19-1",
+      "face": "S",
+      "x": 6,
+      "y": 1,
+      "z": 1,
+      "solutionPair": 23
+    },
+    {
+      "id": "l16-p20-0",
+      "face": "S3",
+      "x": 6,
+      "y": 1,
+      "z": 3,
+      "solutionPair": 2
+    },
+    {
+      "id": "l16-p20-1",
+      "face": "S3",
+      "x": 6,
+      "y": 2,
+      "z": 3,
+      "solutionPair": 2
+    },
+    {
+      "id": "l16-p21-0",
+      "face": "B5",
+      "x": 3,
+      "y": 11,
+      "z": 0,
+      "solutionPair": 44
+    },
+    {
+      "id": "l16-p21-1",
+      "face": "B5",
+      "x": 8,
+      "y": 11,
+      "z": 0,
+      "solutionPair": 44
+    },
+    {
+      "id": "l16-p22-0",
+      "face": "C9",
+      "x": 0,
+      "y": 9,
+      "z": 0,
+      "solutionPair": 32
+    },
+    {
+      "id": "l16-p22-1",
+      "face": "C9",
+      "x": 11,
+      "y": 10,
+      "z": 0,
+      "solutionPair": 32
+    },
+    {
+      "id": "l16-p23-0",
+      "face": "D5",
+      "x": 5,
+      "y": 3,
+      "z": 1,
+      "solutionPair": 28
+    },
+    {
+      "id": "l16-p23-1",
+      "face": "D5",
+      "x": 5,
+      "y": 4,
+      "z": 1,
+      "solutionPair": 28
+    },
+    {
+      "id": "l16-p24-0",
+      "face": "B1",
+      "x": 4,
+      "y": 1,
+      "z": 3,
+      "solutionPair": 4
+    },
+    {
+      "id": "l16-p24-1",
+      "face": "B1",
+      "x": 4,
+      "y": 2,
+      "z": 3,
+      "solutionPair": 4
+    },
+    {
+      "id": "l16-p25-0",
+      "face": "S",
+      "x": 5,
+      "y": 1,
+      "z": 3,
+      "solutionPair": 3
+    },
+    {
+      "id": "l16-p25-1",
+      "face": "S",
+      "x": 5,
+      "y": 2,
+      "z": 3,
+      "solutionPair": 3
+    },
+    {
+      "id": "l16-p26-0",
+      "face": "N",
+      "x": 3,
+      "y": 3,
+      "z": 0,
+      "solutionPair": 42
+    },
+    {
+      "id": "l16-p26-1",
+      "face": "N",
+      "x": 8,
+      "y": 4,
+      "z": 0,
+      "solutionPair": 42
+    },
+    {
+      "id": "l16-p27-0",
+      "face": "S",
+      "x": 10,
+      "y": 1,
+      "z": 1,
+      "solutionPair": 11
+    },
+    {
+      "id": "l16-p27-1",
+      "face": "S",
+      "x": 10,
+      "y": 4,
+      "z": 1,
+      "solutionPair": 11
+    },
+    {
+      "id": "l16-p28-0",
+      "face": "B3",
+      "x": 4,
+      "y": 0,
+      "z": 0,
+      "solutionPair": 45
+    },
+    {
+      "id": "l16-p28-1",
+      "face": "B3",
+      "x": 7,
+      "y": 0,
+      "z": 0,
+      "solutionPair": 45
+    },
+    {
+      "id": "l16-p29-0",
+      "face": "B7",
+      "x": 5,
+      "y": 11,
+      "z": 0,
+      "solutionPair": 54
+    },
+    {
+      "id": "l16-p29-1",
+      "face": "B7",
+      "x": 6,
+      "y": 11,
+      "z": 0,
+      "solutionPair": 54
+    },
+    {
+      "id": "l16-p30-0",
+      "face": "D5",
+      "x": 9,
+      "y": 2,
+      "z": 1,
+      "solutionPair": 13
+    },
+    {
+      "id": "l16-p30-1",
+      "face": "D5",
+      "x": 9,
+      "y": 3,
+      "z": 1,
+      "solutionPair": 13
+    },
+    {
+      "id": "l16-p31-0",
+      "face": "B9",
+      "x": 0,
+      "y": 11,
+      "z": 0,
+      "solutionPair": 33
+    },
+    {
+      "id": "l16-p31-1",
+      "face": "B9",
+      "x": 11,
+      "y": 11,
+      "z": 0,
+      "solutionPair": 33
+    },
+    {
+      "id": "l16-p32-0",
+      "face": "C3",
+      "x": 1,
+      "y": 0,
+      "z": 0,
+      "solutionPair": 34
+    },
+    {
+      "id": "l16-p32-1",
+      "face": "C3",
+      "x": 10,
+      "y": 0,
+      "z": 0,
+      "solutionPair": 34
+    },
+    {
+      "id": "l16-p33-0",
+      "face": "B3",
+      "x": 4,
+      "y": 4,
+      "z": 1,
+      "solutionPair": 26
+    },
+    {
+      "id": "l16-p33-1",
+      "face": "B3",
+      "x": 6,
+      "y": 4,
+      "z": 1,
+      "solutionPair": 26
+    },
+    {
+      "id": "l16-p34-0",
+      "face": "C5",
+      "x": 0,
+      "y": 1,
+      "z": 0,
+      "solutionPair": 30
+    },
+    {
+      "id": "l16-p34-1",
+      "face": "C5",
+      "x": 11,
+      "y": 2,
+      "z": 0,
+      "solutionPair": 30
+    },
+    {
+      "id": "l16-p35-0",
+      "face": "B9",
+      "x": 4,
+      "y": 3,
+      "z": 0,
+      "solutionPair": 46
+    },
+    {
+      "id": "l16-p35-1",
+      "face": "B9",
+      "x": 7,
+      "y": 4,
+      "z": 0,
+      "solutionPair": 46
+    },
+    {
+      "id": "l16-p36-0",
+      "face": "D8",
+      "x": 2,
+      "y": 1,
+      "z": 1,
+      "solutionPair": 15
+    },
+    {
+      "id": "l16-p36-1",
+      "face": "D8",
+      "x": 8,
+      "y": 1,
+      "z": 1,
+      "solutionPair": 15
+    },
+    {
+      "id": "l16-p37-0",
+      "face": "B8",
+      "x": 4,
+      "y": 2,
+      "z": 1,
+      "solutionPair": 24
+    },
+    {
+      "id": "l16-p37-1",
+      "face": "B8",
+      "x": 6,
+      "y": 2,
+      "z": 1,
+      "solutionPair": 24
+    },
+    {
+      "id": "l16-p38-0",
+      "face": "B7",
+      "x": 1,
+      "y": 5,
+      "z": 0,
+      "solutionPair": 36
+    },
+    {
+      "id": "l16-p38-1",
+      "face": "B7",
+      "x": 10,
+      "y": 6,
+      "z": 0,
+      "solutionPair": 36
+    },
+    {
+      "id": "l16-p39-0",
+      "face": "S1",
+      "x": 4,
+      "y": 7,
+      "z": 0,
+      "solutionPair": 47
+    },
+    {
+      "id": "l16-p39-1",
+      "face": "S1",
+      "x": 7,
+      "y": 8,
+      "z": 0,
+      "solutionPair": 47
+    },
+    {
+      "id": "l16-p40-0",
+      "face": "C2",
+      "x": 1,
+      "y": 1,
+      "z": 1,
+      "solutionPair": 12
+    },
+    {
+      "id": "l16-p40-1",
+      "face": "C2",
+      "x": 9,
+      "y": 1,
+      "z": 1,
+      "solutionPair": 12
+    },
+    {
+      "id": "l16-p41-0",
+      "face": "B5",
+      "x": 4,
+      "y": 3,
+      "z": 1,
+      "solutionPair": 25
+    },
+    {
+      "id": "l16-p41-1",
+      "face": "B5",
+      "x": 6,
+      "y": 3,
+      "z": 1,
+      "solutionPair": 25
+    },
+    {
+      "id": "l16-p42-0",
+      "face": "C2",
+      "x": 2,
+      "y": 4,
+      "z": 1,
+      "solutionPair": 18
+    },
+    {
+      "id": "l16-p42-1",
+      "face": "C2",
+      "x": 8,
+      "y": 4,
+      "z": 1,
+      "solutionPair": 18
+    },
+    {
+      "id": "l16-p43-0",
+      "face": "D9",
+      "x": 3,
+      "y": 3,
+      "z": 1,
+      "solutionPair": 21
+    },
+    {
+      "id": "l16-p43-1",
+      "face": "D9",
+      "x": 7,
+      "y": 3,
+      "z": 1,
+      "solutionPair": 21
+    },
+    {
+      "id": "l16-p44-0",
+      "face": "C6",
+      "x": 1,
+      "y": 11,
+      "z": 0,
+      "solutionPair": 38
+    },
+    {
+      "id": "l16-p44-1",
+      "face": "C6",
+      "x": 10,
+      "y": 11,
+      "z": 0,
+      "solutionPair": 38
+    },
+    {
+      "id": "l16-p45-0",
+      "face": "B6",
+      "x": 1,
+      "y": 9,
+      "z": 0,
+      "solutionPair": 37
+    },
+    {
+      "id": "l16-p45-1",
+      "face": "B6",
+      "x": 10,
+      "y": 10,
+      "z": 0,
+      "solutionPair": 37
+    },
+    {
+      "id": "l16-p46-0",
+      "face": "C4",
+      "x": 2,
+      "y": 11,
+      "z": 0,
+      "solutionPair": 40
+    },
+    {
+      "id": "l16-p46-1",
+      "face": "C4",
+      "x": 9,
+      "y": 11,
+      "z": 0,
+      "solutionPair": 40
+    },
+    {
+      "id": "l16-p47-0",
+      "face": "B9",
+      "x": 2,
+      "y": 0,
+      "z": 0,
+      "solutionPair": 39
+    },
+    {
+      "id": "l16-p47-1",
+      "face": "B9",
+      "x": 9,
+      "y": 0,
+      "z": 0,
+      "solutionPair": 39
+    },
+    {
+      "id": "l16-p48-0",
+      "face": "C9",
+      "x": 0,
+      "y": 5,
+      "z": 0,
+      "solutionPair": 31
+    },
+    {
+      "id": "l16-p48-1",
+      "face": "C9",
+      "x": 11,
+      "y": 6,
+      "z": 0,
+      "solutionPair": 31
+    },
+    {
+      "id": "l16-p49-0",
+      "face": "D2",
+      "x": 4,
+      "y": 11,
+      "z": 0,
+      "solutionPair": 48
+    },
+    {
+      "id": "l16-p49-1",
+      "face": "D2",
+      "x": 7,
+      "y": 11,
+      "z": 0,
+      "solutionPair": 48
+    },
+    {
+      "id": "l16-p50-0",
+      "face": "C3",
+      "x": 5,
+      "y": 7,
+      "z": 0,
+      "solutionPair": 52
+    },
+    {
+      "id": "l16-p50-1",
+      "face": "C3",
+      "x": 6,
+      "y": 7,
+      "z": 0,
+      "solutionPair": 52
+    },
+    {
+      "id": "l16-p51-0",
+      "face": "C7",
+      "x": 5,
+      "y": 4,
+      "z": 0,
+      "solutionPair": 51
+    },
+    {
+      "id": "l16-p51-1",
+      "face": "C7",
+      "x": 6,
+      "y": 4,
+      "z": 0,
+      "solutionPair": 51
+    },
+    {
+      "id": "l16-p52-0",
+      "face": "B8",
+      "x": 4,
+      "y": 2,
+      "z": 2,
+      "solutionPair": 10
+    },
+    {
+      "id": "l16-p52-1",
+      "face": "B8",
+      "x": 4,
+      "y": 3,
+      "z": 2,
+      "solutionPair": 10
+    },
+    {
+      "id": "l16-p53-0",
+      "face": "D7",
+      "x": 3,
+      "y": 2,
+      "z": 1,
+      "solutionPair": 20
+    },
+    {
+      "id": "l16-p53-1",
+      "face": "D7",
+      "x": 7,
+      "y": 2,
+      "z": 1,
+      "solutionPair": 20
+    }
+  ],
+  "analysis": {
+    "solvable": true,
+    "difficultyScore": 10,
+    "iqWeight": 1.2,
+    "openingFreeTiles": 35,
+    "openingMatches": 10,
+    "avgBranchingFactor": 18.45,
+    "queuePressureScore": 1,
+    "deadEndRisk": 0.36,
+    "solutionDepth": 108,
+    "expandedNodes": 111,
+    "queuePeak": 4,
+    "recommendedHint": {
+      "tileIds": [
+        "l16-p40-0",
+        "l16-p0-0"
+      ],
+      "reason": "先把这张牌送入托牌槽，给下一步的配对创造空间。"
+    }
+  },
+  "solutionPreview": [
+    "l16-p5-0",
+    "l16-p5-1",
+    "l16-p20-0",
+    "l16-p20-1",
+    "l16-p25-0",
+    "l16-p25-1",
+    "l16-p24-0",
+    "l16-p24-1",
+    "l16-p14-0",
+    "l16-p14-1",
+    "l16-p15-0",
+    "l16-p15-1",
+    "l16-p4-0",
+    "l16-p4-1",
+    "l16-p17-0",
+    "l16-p17-1",
+    "l16-p0-0",
+    "l16-p0-1",
+    "l16-p52-0",
+    "l16-p52-1",
+    "l16-p27-0",
+    "l16-p27-1",
+    "l16-p40-0",
+    "l16-p40-1",
+    "l16-p30-0",
+    "l16-p30-1",
+    "l16-p12-0",
+    "l16-p12-1",
+    "l16-p36-0",
+    "l16-p36-1",
+    "l16-p8-0",
+    "l16-p8-1",
+    "l16-p10-0",
+    "l16-p10-1",
+    "l16-p42-0",
+    "l16-p42-1",
+    "l16-p2-0",
+    "l16-p2-1",
+    "l16-p53-0",
+    "l16-p53-1",
+    "l16-p43-0",
+    "l16-p43-1",
+    "l16-p7-0",
+    "l16-p7-1",
+    "l16-p19-0",
+    "l16-p19-1",
+    "l16-p37-0",
+    "l16-p37-1",
+    "l16-p41-0",
+    "l16-p41-1",
+    "l16-p33-0",
+    "l16-p33-1",
+    "l16-p18-0",
+    "l16-p18-1",
+    "l16-p23-0",
+    "l16-p23-1",
+    "l16-p11-0",
+    "l16-p11-1",
+    "l16-p34-0",
+    "l16-p34-1",
+    "l16-p48-0",
+    "l16-p48-1",
+    "l16-p22-0",
+    "l16-p22-1",
+    "l16-p31-0",
+    "l16-p31-1",
+    "l16-p32-0",
+    "l16-p32-1",
+    "l16-p3-0",
+    "l16-p3-1",
+    "l16-p38-0",
+    "l16-p38-1",
+    "l16-p45-0",
+    "l16-p45-1",
+    "l16-p44-0",
+    "l16-p44-1",
+    "l16-p47-0",
+    "l16-p47-1",
+    "l16-p46-0",
+    "l16-p46-1",
+    "l16-p6-0",
+    "l16-p6-1",
+    "l16-p26-0",
+    "l16-p26-1",
+    "l16-p13-0",
+    "l16-p13-1",
+    "l16-p21-0",
+    "l16-p21-1",
+    "l16-p28-0",
+    "l16-p28-1",
+    "l16-p35-0",
+    "l16-p35-1",
+    "l16-p39-0",
+    "l16-p39-1",
+    "l16-p49-0",
+    "l16-p49-1",
+    "l16-p16-0",
+    "l16-p16-1",
+    "l16-p1-0",
+    "l16-p1-1",
+    "l16-p51-0",
+    "l16-p51-1",
+    "l16-p50-0",
+    "l16-p50-1",
+    "l16-p9-0",
+    "l16-p9-1",
+    "l16-p29-0",
+    "l16-p29-1"
+  ]
+}
