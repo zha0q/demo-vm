@@ -18,6 +18,7 @@ import {
   resetStaticResourcePreload,
   type PreloadProgress,
 } from './core/preloadAssets';
+import { createGameAudio } from './core/gameAudio';
 import { calculateInGameIq } from './game/inGameIqCalculator';
 import {
   clearSavedState,
@@ -98,7 +99,7 @@ function loadInitialState(): AppState {
 
 export function App() {
   const [bootStatus, setBootStatus] = useState<BootStatus>('loading');
-  const [bootProgress, setBootProgress] = useState<PreloadProgress>({ loaded: 0, total: 5, label: '准备资源' });
+  const [bootProgress, setBootProgress] = useState<PreloadProgress>({ loaded: 0, total: 9, label: '准备资源' });
   const [bootError, setBootError] = useState<string | null>(null);
   const [initialState, setInitialState] = useState<AppState | null>(null);
 
@@ -140,7 +141,7 @@ export function App() {
         onRetry={() => {
           resetStaticResourcePreload();
           setBootError(null);
-          setBootProgress({ loaded: 0, total: 5, label: '重新加载资源' });
+          setBootProgress({ loaded: 0, total: 9, label: '重新加载资源' });
           setBootStatus('loading');
           preloadStaticResources(setBootProgress)
             .then(() => {
@@ -162,10 +163,16 @@ export function App() {
 function GameApp({ initialState }: { initialState: AppState }) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const sceneRef = useRef<MahjongScene | null>(null);
+  const audioRef = useRef<ReturnType<typeof createGameAudio> | null>(null);
   const [state, setState] = useState<AppState>(() => initialState);
   const [elapsed, setElapsed] = useState(0);
   const [moreOpen, setMoreOpen] = useState(false);
   const wonRef = useRef(false);
+
+  if (!audioRef.current) {
+    console.log('[App] createGameAudio');
+    audioRef.current = createGameAudio();
+  }
 
   const level = getLevel(state.currentLevel);
   const moves = findAvailableMoves(state.game.tiles);
@@ -255,15 +262,33 @@ function GameApp({ initialState }: { initialState: AppState }) {
   }
 
   function handleTileClick(tileId: string) {
+    console.log('[App] handleTileClick', { tileId });
+    let sound: 'select' | 'peng' | 'fail' | null = null;
+
     setState((current) => {
+      console.log('[App] handleTileClick state', { page: current.page, queueLength: current.game.stepQueue.tileIds.length });
+
       if (current.page !== 'game') {
+        console.log('[App] handleTileClick ignored because page is not game', { page: current.page });
         return current;
       }
 
       const game = cloneGame(current.game);
       const tile = game.tiles.find((candidate) => candidate.id === tileId);
 
+      console.log('[App] handleTileClick tileState', {
+        tileId,
+        tileExists: Boolean(tile),
+        removed: tile?.removed,
+        state: tile?.state,
+        isFree: tile ? isTileFree(game.tiles, tileId) : undefined,
+        inStepQueue: game.stepQueue.tileIds.includes(tileId),
+        queuedLength: game.stepQueue.tileIds.length,
+      });
+
       if (!tile || tile.removed) {
+        console.log('[App] handleTileClick missing or removed tile', { tileId });
+        sound = 'fail';
         return current;
       }
 
@@ -279,18 +304,22 @@ function GameApp({ initialState }: { initialState: AppState }) {
           matchingTileIds: [],
         };
         game.message = '已从托牌槽移回牌桌。';
+        sound = 'select';
         return { ...current, game };
       }
 
       if (!isTileFree(game.tiles, tileId)) {
         game.message = '这张牌还没解锁。先清掉上层或旁边的阻挡。';
+        sound = 'fail';
         return { ...current, game };
       }
 
       const queueResult = enqueueTile(game.stepQueue, tile, game.tiles);
+      console.log('[App] handleTileClick queueResult', queueResult);
 
       if (!queueResult.accepted) {
         game.message = '托牌槽已满，本关失败。';
+        sound = 'fail';
         return {
           ...current,
           page: 'failed',
@@ -316,6 +345,7 @@ function GameApp({ initialState }: { initialState: AppState }) {
 
         if (queueResult.queue.tileIds.length >= STEP_QUEUE_MAX_SIZE) {
           game.message = '托牌槽已满，本关失败。';
+          sound = 'fail';
           return {
             ...current,
             page: 'failed',
@@ -330,10 +360,12 @@ function GameApp({ initialState }: { initialState: AppState }) {
         }
 
         if (!canContinueWithStepQueue(game)) {
+          sound = 'fail';
           return failStateForNoStepQueueMoves(current, game, elapsed);
         }
 
         game.message = '已放入托牌槽，继续寻找可配对牌。';
+        sound = 'select';
         return { ...current, game };
       }
 
@@ -341,7 +373,11 @@ function GameApp({ initialState }: { initialState: AppState }) {
       const result = removePair(game, firstId, secondId);
       game.stepQueue = queueResult.queue;
 
+      console.log('[App] handleTileClick matchedIds', { firstId, secondId, result });
+
       if (!result.ok) {
+        console.log('[App] handleTileClick removePair failed', { firstId, secondId, message: result.message });
+        sound = 'fail';
         return { ...current, game };
       }
 
@@ -353,16 +389,26 @@ function GameApp({ initialState }: { initialState: AppState }) {
         }
       }
 
+      sound = 'peng';
+
       if (isWon(game) && !wonRef.current) {
         return completeStateIfWon({ ...current, game }, elapsed, wonRef);
       }
 
       if (!canContinueWithStepQueue(game)) {
+        sound = 'fail';
         return failStateForNoStepQueueMoves(current, game, elapsed);
       }
 
       return { ...current, game };
     });
+
+    if (sound) {
+      console.log('[App] handleTileClick play sound', sound, { tileId });
+      audioRef.current?.play(sound);
+    } else {
+      console.log('[App] handleTileClick no sound', { tileId });
+    }
   }
 
   function showHint() {
@@ -676,7 +722,7 @@ function StepQueueView({ faces }: { faces: string[] }) {
 function TileFace({ face }: { face: string }) {
   return (
     <span className="queue-tile">
-      <span className="queue-tile-sprite" style={getMahjongFaceQueueSpriteStyle(face, 44, 62)} />
+      <span className="queue-tile-sprite" style={getMahjongFaceQueueSpriteStyle(face, 34, 52)} />
     </span>
   );
 }

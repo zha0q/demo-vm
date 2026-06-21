@@ -10,16 +10,19 @@ import {
   type CameraControlState,
 } from './cameraControls';
 
-const TILE_WIDTH = 1.18;
-const TILE_HEIGHT = 1.5;
+const TILE_WIDTH = 1.02;
+const TILE_HEIGHT = 1.74;
 const TILE_DEPTH = 0.34;
-const TILE_STEP_X = 1.1;
-const TILE_STEP_Z = 1.26;
+const TILE_STEP_X = 0.94;
+const TILE_STEP_Z = 1.38;
 const LAYER_RISE = 0.46;
 const LAYER_OFFSET_X = -0.42;
 const LAYER_OFFSET_Z = -0.32;
 const CAMERA_SIDE_OFFSET = 0;
 const CAMERA_DISTANCE = 24;
+const HINT_DURATION_MS = 2800;
+const FACE_PADDING_X = 0.14;
+const FACE_PADDING_Y = 0.1;
 const SPRITE_IMAGE = new Image();
 const PENDING_FACE_TEXTURES = new Set<THREE.CanvasTexture>();
 
@@ -57,6 +60,9 @@ export class MahjongScene {
   private animationFrame = 0;
   private dragging = false;
   private lastPointer = { x: 0, y: 0 };
+  private suppressClick = false;
+  private pinchDistance: number | null = null;
+  private readonly activePointers = new Map<number, { x: number; y: number }>();
 
   constructor({ canvas, onTileClick }: MahjongSceneOptions) {
     this.canvas = canvas;
@@ -75,6 +81,7 @@ export class MahjongScene {
 
   renderBoard(game: GameState) {
     this.game = game;
+    const now = performance.now();
     const activeIds = new Set(game.tiles.map((tile) => tile.id));
 
     for (const [id, mesh] of this.tileMeshes) {
@@ -103,6 +110,7 @@ export class MahjongScene {
         free: isTileFree(game.tiles, tile.id),
         selected: game.selectedId === tile.id,
         hovered: this.hoveredId === tile.id,
+        hinted: Boolean(mesh.userData.hintUntil && mesh.userData.hintUntil > now),
         removed: Boolean(tile.removed),
       });
     }
@@ -119,7 +127,7 @@ export class MahjongScene {
       const mesh = this.tileMeshes.get(id);
 
       if (mesh) {
-        mesh.userData.hintUntil = performance.now() + 1400;
+        mesh.userData.hintUntil = performance.now() + HINT_DURATION_MS;
       }
     }
   }
@@ -130,6 +138,7 @@ export class MahjongScene {
     this.canvas.removeEventListener('pointermove', this.handlePointerMove);
     this.canvas.removeEventListener('pointerdown', this.handlePointerDown);
     this.canvas.removeEventListener('pointerup', this.handlePointerUp);
+    this.canvas.removeEventListener('pointercancel', this.handlePointerCancel);
     this.canvas.removeEventListener('pointerleave', this.handlePointerLeave);
     this.canvas.removeEventListener('click', this.handleClick);
     this.canvas.removeEventListener('wheel', this.handleWheel);
@@ -165,26 +174,42 @@ export class MahjongScene {
     this.canvas.addEventListener('pointermove', this.handlePointerMove);
     this.canvas.addEventListener('pointerdown', this.handlePointerDown);
     this.canvas.addEventListener('pointerup', this.handlePointerUp);
+    this.canvas.addEventListener('pointercancel', this.handlePointerCancel);
     this.canvas.addEventListener('pointerleave', this.handlePointerLeave);
     this.canvas.addEventListener('click', this.handleClick);
     this.canvas.addEventListener('wheel', this.handleWheel, { passive: false });
   }
 
   private handlePointerDown = (event: PointerEvent) => {
+    this.activePointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
+    this.pinchDistance = this.activePointers.size >= 2 ? this.measurePinchDistance() : null;
+    this.suppressClick = false;
     this.dragging = true;
     this.lastPointer = { x: event.clientX, y: event.clientY };
     this.canvas.setPointerCapture(event.pointerId);
   };
 
   private handlePointerUp = (event: PointerEvent) => {
+    this.activePointers.delete(event.pointerId);
+    if (this.activePointers.size < 2) {
+      this.pinchDistance = null;
+    }
     this.dragging = false;
     if (this.canvas.hasPointerCapture(event.pointerId)) {
       this.canvas.releasePointerCapture(event.pointerId);
     }
   };
 
+  private handlePointerCancel = (event: PointerEvent) => {
+    this.activePointers.delete(event.pointerId);
+    this.dragging = false;
+    this.pinchDistance = null;
+  };
+
   private handlePointerLeave = () => {
     this.dragging = false;
+    this.activePointers.clear();
+    this.pinchDistance = null;
     this.hoveredId = null;
     if (this.game) {
       this.renderBoard(this.game);
@@ -192,10 +217,33 @@ export class MahjongScene {
   };
 
   private handlePointerMove = (event: PointerEvent) => {
+    this.activePointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
+
+    if (this.activePointers.size >= 2) {
+      const nextDistance = this.measurePinchDistance();
+
+      if (this.pinchDistance && nextDistance > 0) {
+        this.suppressClick = true;
+        this.controls = clampCameraControls({
+          ...this.controls,
+          zoom: this.controls.zoom * (nextDistance / this.pinchDistance),
+        });
+        this.applyCamera();
+      }
+
+      this.pinchDistance = nextDistance;
+      return;
+    }
+
     if (this.dragging && event.buttons === 1) {
       const scale = 0.015 / this.controls.zoom;
       const dx = (this.lastPointer.x - event.clientX) * scale;
       const dz = (event.clientY - this.lastPointer.y) * scale;
+
+      if (Math.abs(dx) + Math.abs(dz) > 0.02) {
+        this.suppressClick = true;
+      }
+
       this.controls = panCameraControls(this.controls, { x: dx, z: dz });
       this.lastPointer = { x: event.clientX, y: event.clientY };
       this.applyCamera();
@@ -219,12 +267,28 @@ export class MahjongScene {
   };
 
   private handleClick = (event: MouseEvent) => {
+    console.log('[MahjongScene] handleClick', {
+      movementX: event.movementX,
+      movementY: event.movementY,
+      pointerType: event instanceof PointerEvent ? event.pointerType : 'mouse',
+      buttons: event.buttons,
+    });
+
+    if (this.suppressClick) {
+      this.suppressClick = false;
+      console.log('[MahjongScene] handleClick suppressed');
+      return;
+    }
+
     if (Math.abs(event.movementX) + Math.abs(event.movementY) > 3) {
+      console.log('[MahjongScene] handleClick ignored due to movement');
       return;
     }
 
     const hit = this.pickTile(event);
     const tileId = hit?.object.userData.tileId;
+
+    console.log('[MahjongScene] handleClick hit', { tileId });
 
     if (tileId) {
       this.onTileClick(tileId);
@@ -294,13 +358,16 @@ export class MahjongScene {
     }
 
     const isNewBoard = layoutSignature !== this.layoutSignature;
+    const compactViewport = this.canvas.clientWidth < 700;
+    const viewportAspect = Math.max(this.canvas.clientWidth, 1) / Math.max(this.canvas.clientHeight, 1);
+    const fitHeight = Math.max(boardHeight * 1.18, (boardWidth / Math.max(viewportAspect, 0.46)) * 1.06);
     this.boardSignature = signature;
     this.layoutSignature = layoutSignature;
     this.controls = clampCameraControls({
       ...this.controls,
       bounds: { boardWidth, boardHeight },
-      height: Math.max(boardWidth, boardHeight) * 1.18 + 2.4,
-      zoom: isNewBoard ? 0.9 : this.controls.zoom,
+      height: fitHeight + (compactViewport ? 0.8 : 1.5),
+      zoom: isNewBoard ? (compactViewport ? 1.02 : 0.96) : this.controls.zoom,
     });
     this.applyCamera();
   }
@@ -334,12 +401,26 @@ export class MahjongScene {
 
     for (const mesh of this.tileMeshes.values()) {
       const hintActive = mesh.userData.hintUntil && mesh.userData.hintUntil > now;
-      const lift = hintActive ? Math.sin(now / 95) * 0.035 + 0.05 : 0;
+      const pulse = hintActive ? (Math.sin(now / 70) + 1) * 0.5 : 0;
+      const lift = hintActive ? Math.sin(now / 78) * 0.12 + 0.22 : 0;
+      const baseScale = (mesh.userData.baseScale as number | undefined) ?? 1;
       mesh.position.y = mesh.userData.baseY + lift;
+      mesh.rotation.z = hintActive ? Math.sin(now / 120) * 0.12 : 0;
+      mesh.scale.setScalar(baseScale + (hintActive ? 0.08 + pulse * 0.1 : 0));
     }
 
     this.renderer.render(this.scene, this.camera);
   };
+
+  private measurePinchDistance() {
+    const [first, second] = [...this.activePointers.values()];
+
+    if (!first || !second) {
+      return 0;
+    }
+
+    return Math.hypot(first.x - second.x, first.y - second.y);
+  }
 }
 
 function createTileMesh(tile: Tile) {
@@ -367,12 +448,19 @@ function updateTileMaterial(mesh: THREE.Mesh, state: {
   free: boolean;
   selected: boolean;
   hovered: boolean;
+  hinted: boolean;
   removed: boolean;
 }) {
   const materials = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
   const top = materials[2];
-  const sideColor = state.free ? '#0f8a38' : '#244f31';
-  const topTint = state.selected ? '#86ead9' : state.hovered && state.free ? '#fff2a8' : '#f8f1d8';
+  const sideColor = state.hinted ? '#24c95a' : state.free ? '#0f8a38' : '#244f31';
+  const topTint = state.hinted
+    ? '#fff7b3'
+    : state.selected
+      ? '#86ead9'
+      : state.hovered && state.free
+        ? '#fff2a8'
+        : '#f8f1d8';
 
   materials.forEach((material, index) => {
     material.opacity = state.removed ? 0 : state.free ? 1 : 0.92;
@@ -382,13 +470,19 @@ function updateTileMaterial(mesh: THREE.Mesh, state: {
     if ('color' in material && material.color instanceof THREE.Color && index !== 2) {
       material.color.set(sideColor);
     }
+
+    if (material instanceof THREE.MeshStandardMaterial) {
+      material.emissive.set(state.hinted ? '#7a5f00' : '#000000');
+      material.emissiveIntensity = state.hinted ? 0.8 : 0;
+    }
   });
 
   if ('color' in top && top.color instanceof THREE.Color) {
     top.color.set(topTint);
   }
 
-  mesh.scale.setScalar(state.selected ? 1.04 : 1);
+  mesh.userData.baseScale = state.selected ? 1.04 : 1;
+  mesh.scale.setScalar(mesh.userData.baseScale);
 }
 
 function sideMaterial(color: string) {
@@ -497,6 +591,13 @@ function drawFaceToCanvas(face: string, canvas: HTMLCanvasElement) {
   }
 
   const frame = getMahjongFaceFrame(face);
+  const drawWidthLimit = canvas.width * (1 - FACE_PADDING_X * 2);
+  const drawHeightLimit = canvas.height * (1 - FACE_PADDING_Y * 2);
+  const scale = Math.min(drawWidthLimit / frame.width, drawHeightLimit / frame.height);
+  const drawWidth = frame.width * scale;
+  const drawHeight = frame.height * scale;
+  const drawX = (canvas.width - drawWidth) / 2;
+  const drawY = (canvas.height - drawHeight) / 2;
   context.clearRect(0, 0, canvas.width, canvas.height);
   context.fillStyle = '#f8f1d8';
   context.fillRect(0, 0, canvas.width, canvas.height);
@@ -506,10 +607,10 @@ function drawFaceToCanvas(face: string, canvas: HTMLCanvasElement) {
     frame.y,
     frame.width,
     frame.height,
-    0,
-    0,
-    canvas.width,
-    canvas.height,
+    drawX,
+    drawY,
+    drawWidth,
+    drawHeight,
   );
 }
 

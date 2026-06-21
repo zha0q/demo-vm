@@ -1,33 +1,7 @@
-import mahjongSpriteUrl from '../assets/mahjong.PNG';
+import classicSpriteUrl from '../assets/classic.png';
 
-const SPRITE_SHEET_SIZE = 2880;
-
-const COLUMN_BOUNDS = [
-  [51, 258],
-  [285, 495],
-  [517, 728],
-  [748, 962],
-  [988, 1196],
-  [1221, 1429],
-  [1454, 1662],
-  [1688, 1896],
-  [1921, 2130],
-  [2156, 2365],
-  [2389, 2599],
-  [2623, 2835],
-] as const;
-
-const ROW_BOUNDS = [
-  [29, 326],
-  [346, 643],
-  [664, 952],
-  [978, 1275],
-  [1297, 1583],
-  [1610, 1891],
-  [1920, 2195],
-  [2223, 2487],
-  [2521, 2779],
-] as const;
+const SPRITE_SHEET_WIDTH = 1440;
+const SPRITE_SHEET_HEIGHT = 1704;
 
 export interface MahjongSpriteFrame {
   x: number;
@@ -43,71 +17,66 @@ interface FrameInset {
   bottom?: number;
 }
 
-function frame(row: number, column: number): MahjongSpriteFrame {
-  const [left, right] = COLUMN_BOUNDS[column - 1];
-  const [top, bottom] = ROW_BOUNDS[row - 1];
-
-  return {
-    x: left,
-    y: top,
-    width: right - left + 1,
-    height: bottom - top + 1,
-  };
+function rect(x: number, y: number, width: number, height: number): MahjongSpriteFrame {
+  return { x, y, width, height };
 }
 
-const DEFAULT_FRAME = frame(9, 1);
+const DEFAULT_FRAME = rect(0, 0, 160, 190);
 
 const FACE_FRAME_MAP: Record<string, MahjongSpriteFrame> = {
-  D1: frame(1, 1),
-  D2: frame(1, 2),
-  D3: frame(1, 3),
-  D4: frame(1, 4),
-  D5: frame(1, 5),
-  D6: frame(1, 6),
-  D7: frame(1, 7),
-  D8: frame(1, 8),
-  D9: frame(1, 9),
-  B1: frame(2, 1),
-  B2: frame(2, 2),
-  B3: frame(2, 3),
-  B4: frame(2, 4),
-  B5: frame(2, 5),
-  B6: frame(2, 6),
-  B7: frame(2, 7),
-  B8: frame(2, 8),
-  B9: frame(2, 9),
-  C1: frame(1, 10),
-  C2: frame(1, 11),
-  C3: frame(1, 12),
-  C4: frame(2, 10),
-  C5: frame(2, 11),
-  C6: frame(2, 12),
-  C7: frame(3, 10),
-  C8: frame(3, 11),
-  C9: frame(3, 12),
-  E: frame(3, 1),
-  S: frame(3, 2),
-  W: frame(3, 3),
-  N: frame(3, 4),
-  RED: frame(3, 5),
-  GREEN: frame(3, 6),
-  WHITE: frame(3, 7),
-  F1: frame(7, 5),
-  F2: frame(7, 6),
-  F3: frame(7, 7),
-  F4: frame(7, 4),
-  S1: frame(8, 8),
-  S2: frame(8, 9),
-  S3: frame(8, 10),
-  S4: frame(8, 11),
+  C1: rect(0, 0, 160, 190),
+  C2: rect(168, 8, 150, 190),
+  C3: rect(328, 8, 150, 190),
+  C4: rect(488, 8, 150, 190),
+  C5: rect(648, 8, 150, 190),
+  C6: rect(808, 8, 150, 190),
+  C7: rect(968, 8, 150, 190),
+  C8: rect(1128, 8, 150, 190),
+  C9: rect(1288, 8, 152, 190),
+  D1: rect(16, 212, 138, 220),
+  D2: rect(176, 212, 138, 220),
+  D3: rect(336, 212, 138, 220),
+  D4: rect(496, 212, 138, 220),
+  D5: rect(656, 212, 138, 220),
+  D6: rect(816, 212, 138, 220),
+  D7: rect(976, 212, 138, 220),
+  D8: rect(1136, 212, 138, 220),
+  D9: rect(1296, 212, 138, 220),
+  B1: rect(10, 430, 150, 210),
+  B2: rect(174, 430, 140, 210),
+  B3: rect(334, 430, 140, 210),
+  B4: rect(494, 430, 140, 210),
+  B5: rect(654, 430, 140, 210),
+  B6: rect(814, 430, 140, 210),
+  B7: rect(974, 430, 140, 210),
+  B8: rect(1134, 430, 140, 210),
+  B9: rect(1292, 430, 142, 210),
+  N: rect(10, 640, 150, 220),
+  W: rect(170, 640, 150, 220),
+  S: rect(330, 640, 150, 220),
+  E: rect(490, 640, 150, 220),
+  F1: rect(810, 640, 150, 220),
+  F2: rect(970, 640, 150, 220),
+  F3: rect(1130, 640, 150, 220),
+  F4: rect(1290, 640, 150, 220),
+  S1: rect(10, 850, 150, 220),
+  S2: rect(170, 850, 150, 220),
+  S3: rect(330, 850, 150, 220),
+  S4: rect(490, 850, 150, 220),
+  RED: rect(960, 835, 160, 230),
+  GREEN: rect(1120, 835, 160, 230),
+  WHITE: rect(1282, 820, 158, 236),
 };
 
 export function getMahjongSpriteUrl() {
-  return mahjongSpriteUrl;
+  return classicSpriteUrl;
 }
 
 export function getMahjongSpriteSheetSize() {
-  return SPRITE_SHEET_SIZE;
+  return {
+    width: SPRITE_SHEET_WIDTH,
+    height: SPRITE_SHEET_HEIGHT,
+  };
 }
 
 export function getMahjongFaceFrame(face: string) {
@@ -130,24 +99,27 @@ function insetFrame(frameRect: MahjongSpriteFrame, inset: FrameInset = {}) {
 
 export function getMahjongFaceSpriteStyle(face: string, width: number, height: number, inset?: FrameInset) {
   const target = insetFrame(getMahjongFaceFrame(face), inset);
-  const scale = Math.min(width / target.width, height / target.height);
-  const scaledSheetSize = SPRITE_SHEET_SIZE * scale;
-  const offsetX = (width - target.width * scale) / 2 - target.x * scale;
-  const offsetY = (height - target.height * scale) / 2 - target.y * scale;
+  const fitWidth = width * 0.8;
+  const fitHeight = height * 0.84;
+  const scale = Math.min(fitWidth / target.width, fitHeight / target.height);
+  const drawnWidth = target.width * scale;
+  const drawnHeight = target.height * scale;
+  const offsetX = (width - drawnWidth) / 2 - target.x * scale;
+  const offsetY = (height - drawnHeight) / 2 - target.y * scale;
 
   return {
-    backgroundImage: `url(${mahjongSpriteUrl})`,
+    backgroundImage: `url(${classicSpriteUrl})`,
     backgroundRepeat: 'no-repeat',
-    backgroundSize: `${scaledSheetSize}px ${scaledSheetSize}px`,
+    backgroundSize: `${SPRITE_SHEET_WIDTH * scale}px ${SPRITE_SHEET_HEIGHT * scale}px`,
     backgroundPosition: `${offsetX}px ${offsetY}px`,
   };
 }
 
 export function getMahjongFaceQueueSpriteStyle(face: string, width: number, height: number) {
   return getMahjongFaceSpriteStyle(face, width, height, {
-    left: 12,
-    right: 10,
-    top: 10,
-    bottom: 12,
+    left: 6,
+    right: 6,
+    top: 8,
+    bottom: 8,
   });
 }
