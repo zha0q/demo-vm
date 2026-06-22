@@ -1,7 +1,4 @@
-import failSoundUrl from '../assets/audio/fail.ogg';
-import pengSoundUrl from '../assets/audio/peng.ogg';
-import select0SoundUrl from '../assets/audio/select0.ogg';
-import select1SoundUrl from '../assets/audio/select1.ogg';
+import { getResolvedAudioEffectSources } from './audioSources';
 
 export type GameSoundEffect = 'select' | 'peng' | 'fail';
 
@@ -13,28 +10,31 @@ export interface GameAudioPlayer {
 }
 
 export function createGameAudio(): GameAudioPlayer {
-  console.log('[gameAudio] createGameAudio');
+  const sources = getResolvedAudioEffectSources();
   const selectAudioElements = [
-    createAudioElement(select0SoundUrl),
-    createAudioElement(select1SoundUrl),
+    createAudioElement(sources.select[0]),
+    createAudioElement(sources.select[1]),
   ];
-  const pengAudio = createAudioElement(pengSoundUrl);
-  const failAudio = createAudioElement(failSoundUrl);
+  const pengAudio = createAudioElement(sources.peng);
+  const failAudio = createAudioElement(sources.fail);
+  const unlockAudio = createAudioUnlocker([...selectAudioElements, pengAudio, failAudio]);
   let selectIndex = 0;
 
   const playSelect = () => {
     const audio = selectAudioElements[selectIndex % selectAudioElements.length];
     selectIndex += 1;
-    console.log('[gameAudio] playSelect', { src: audio.src });
-    playSound(audio, audio.src);
+    unlockAudio();
+    playSound(audio);
   };
 
   const playPeng = () => {
-    playSound(pengAudio, pengSoundUrl);
+    unlockAudio();
+    playSound(pengAudio);
   };
 
   const playFail = () => {
-    playSound(failAudio, failSoundUrl);
+    unlockAudio();
+    playSound(failAudio);
   };
 
   return {
@@ -60,31 +60,79 @@ function createAudioElement(url: string) {
   audio.autoplay = false;
   audio.muted = false;
   audio.load();
-  console.log('[gameAudio] createAudioElement', { url, canPlayOgg: audio.canPlayType('audio/ogg') });
   return audio;
 }
 
-function playSound(audio: HTMLAudioElement, url: string) {
+function playSound(audio: HTMLAudioElement) {
   try {
     audio.currentTime = 0;
-  } catch (error) {
+  } catch {
     // Some browsers may reject currentTime resets before metadata is loaded.
   }
 
-  console.log('[gameAudio] playSound attempt', {
-    url,
-    readyState: audio.readyState,
-    paused: audio.paused,
-    muted: audio.muted,
-    currentSrc: audio.currentSrc,
+  void audio.play().catch(() => {
+    // iOS Safari may still reject playback until audio is unlocked by a gesture.
   });
+}
 
-  audio
+function createAudioUnlocker(audioElements: HTMLAudioElement[]) {
+  let unlocked = false;
+
+  const unlock = () => {
+    if (unlocked) {
+      return;
+    }
+
+    unlocked = true;
+    removeUnlockListeners();
+
+    for (const audio of audioElements) {
+      primeAudioElement(audio);
+    }
+  };
+
+  const removeUnlockListeners = () => {
+    if (typeof window === 'undefined') {
+      return;
+    }
+
+    window.removeEventListener('pointerdown', unlock);
+    window.removeEventListener('touchstart', unlock);
+    window.removeEventListener('keydown', unlock);
+  };
+
+  if (typeof window !== 'undefined') {
+    window.addEventListener('pointerdown', unlock, { passive: true });
+    window.addEventListener('touchstart', unlock, { passive: true });
+    window.addEventListener('keydown', unlock);
+  }
+
+  return unlock;
+}
+
+function primeAudioElement(audio: HTMLAudioElement) {
+  const previousMuted = audio.muted;
+  const previousVolume = audio.volume;
+
+  audio.muted = true;
+  audio.volume = 0;
+
+  void audio
     .play()
     .then(() => {
-      console.log('[gameAudio] playSound success', { url });
+      audio.pause();
+
+      try {
+        audio.currentTime = 0;
+      } catch {
+        // Ignore currentTime resets before metadata is available.
+      }
     })
-    .catch((error) => {
-      console.error('[gameAudio] playSound failed', { url, error });
+    .catch(() => {
+      // Ignore unlock failures and fall back to direct playback attempts.
+    })
+    .finally(() => {
+      audio.muted = previousMuted;
+      audio.volume = previousVolume;
     });
 }

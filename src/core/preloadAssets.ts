@@ -2,10 +2,7 @@ import beginBackgroundUrl from '../assets/begin_bg.PNG';
 import gamingBackgroundUrl from '../assets/gaming_bg.PNG';
 import mahjongSpriteUrl from '../assets/classic.png';
 import successTitleUrl from '../assets/success_title.PNG';
-import failSoundUrl from '../assets/audio/fail.ogg';
-import pengSoundUrl from '../assets/audio/peng.ogg';
-import select0SoundUrl from '../assets/audio/select0.ogg';
-import select1SoundUrl from '../assets/audio/select1.ogg';
+import { getResolvedPreloadAudioAssets } from './audioSources';
 import { getLevel, levelCatalog } from './levelLoader';
 
 export interface PreloadProgress {
@@ -23,12 +20,6 @@ const IMAGE_ASSETS = [
   { label: '通关标题', url: successTitleUrl },
 ] as const;
 
-const AUDIO_ASSETS = [
-  { label: '音效-失败', url: failSoundUrl },
-  { label: '音效-碰', url: pengSoundUrl },
-  { label: '音效-选中A', url: select0SoundUrl },
-  { label: '音效-选中B', url: select1SoundUrl },
-] as const;
 const AUDIO_PRELOAD_TIMEOUT_MS = 2500;
 
 let preloadPromise: Promise<void> | null = null;
@@ -38,7 +29,8 @@ export function preloadStaticResources(onProgress?: ProgressListener) {
     return preloadPromise;
   }
 
-  const total = IMAGE_ASSETS.length + AUDIO_ASSETS.length + 1;
+  const audioAssets = getResolvedPreloadAudioAssets();
+  const total = IMAGE_ASSETS.length + audioAssets.length + 1;
   let loaded = 0;
   const report = (label: string) => {
     loaded += 1;
@@ -47,7 +39,7 @@ export function preloadStaticResources(onProgress?: ProgressListener) {
 
   preloadPromise = Promise.all([
     ...IMAGE_ASSETS.map((asset) => preloadImage(asset.url).then(() => report(asset.label))),
-    ...AUDIO_ASSETS.map((asset) => preloadAudio(asset.url).then(() => report(asset.label))),
+    ...audioAssets.map((asset) => preloadAudio(asset.url).then(() => report(asset.label))),
   ])
     .then(() => {
       preloadLevelAssets();
