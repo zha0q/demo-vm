@@ -1,7 +1,7 @@
-import beginBackgroundUrl from '../assets/begin_bg.PNG';
-import gamingBackgroundUrl from '../assets/gaming_bg.PNG';
+import beginBackgroundUrl from '../assets/begin_bg.png';
+import gamingBackgroundUrl from '../assets/gaming_bg.png';
 import mahjongSpriteUrl from '../assets/classic.png';
-import successTitleUrl from '../assets/success_title.PNG';
+import successTitleUrl from '../assets/success_title.png';
 import failSoundUrl from '../assets/audio/fail.ogg';
 import pengSoundUrl from '../assets/audio/peng.ogg';
 import select0SoundUrl from '../assets/audio/select0.ogg';
@@ -29,6 +29,7 @@ const AUDIO_ASSETS = [
   { label: '音效-选中A', url: select0SoundUrl },
   { label: '音效-选中B', url: select1SoundUrl },
 ] as const;
+const AUDIO_PRELOAD_TIMEOUT_MS = 2500;
 
 let preloadPromise: Promise<void> | null = null;
 
@@ -71,11 +72,36 @@ function preloadImage(url: string) {
 }
 
 function preloadAudio(url: string) {
-  return new Promise<void>((resolve, reject) => {
+  return new Promise<void>((resolve) => {
     const audio = new Audio(url);
+    let settled = false;
+    const timeoutId = window.setTimeout(finish, AUDIO_PRELOAD_TIMEOUT_MS);
+
+    function cleanup() {
+      audio.oncanplaythrough = null;
+      audio.oncanplay = null;
+      audio.onloadeddata = null;
+      audio.onloadedmetadata = null;
+      audio.onerror = null;
+      window.clearTimeout(timeoutId);
+    }
+
+    function finish() {
+      if (settled) {
+        return;
+      }
+
+      settled = true;
+      cleanup();
+      resolve();
+    }
+
     audio.preload = 'auto';
-    audio.oncanplaythrough = () => resolve();
-    audio.onerror = () => reject(new Error(`Failed to preload audio: ${url}`));
+    audio.oncanplaythrough = finish;
+    audio.oncanplay = finish;
+    audio.onloadeddata = finish;
+    audio.onloadedmetadata = finish;
+    audio.onerror = finish;
     audio.load();
   });
 }

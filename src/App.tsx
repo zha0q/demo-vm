@@ -11,7 +11,7 @@ import {
   undoLastMove,
   type GameState,
 } from './game/board';
-import successTitleImage from './assets/success_title.PNG';
+import successTitleImage from './assets/success_title.png';
 import { createLevelTiles, getLevel, levelCatalog } from './core/levelLoader';
 import {
   preloadStaticResources,
